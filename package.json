@@ -5,7 +5,9 @@
   "keywords": [],
   "main": "src/index.js",
   "dependencies": {
+    "crc": "3.8.0",
     "define-lazy-prop": "1.0.0",
+    "polycrc": "0.1.0",
     "react": "16.5.2",
     "react-dom": "16.5.2",
     "react-object-inspector": "0.2.1",
