@@ -2,7 +2,7 @@ import defineLazyProp from "define-lazy-prop";
 import * as MPI from "../MPI.js";
 import { HashAlgorithm, PublicKeyAlgorithm } from "../constants.js";
 import * as SubpacketArray from "./SignatureSubpacket/SubpacketArray.js";
-import { concatenateUint8Arrays } from "./SignatureSubpacket/concatenateUint8Arrays.js";
+import concatenate from "concat-buffers";
 
 export function parse(b) {
   let packet = {};
@@ -67,5 +67,5 @@ export function serialize(packet) {
       buffers.push(MPI.serialize(packet.mpi.signature));
     }
   }
-  return concatenateUint8Arrays(buffers);
+  return concatenate(buffers);
 }

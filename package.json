@@ -5,6 +5,8 @@
   "keywords": [],
   "main": "src/index.js",
   "dependencies": {
+    "array-buffer-to-hex": "1.0.0",
+    "concat-buffers": "1.0.0",
     "crc": "3.8.0",
     "define-lazy-prop": "1.0.0",
     "polycrc": "0.1.0",

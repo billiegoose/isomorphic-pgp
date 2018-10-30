@@ -1,4 +1,4 @@
-import { uint8ArrayToHex } from "./uint8ArrayToHex.js";
+import uint8ArrayToHex from "array-buffer-to-hex";
 
 export function parse(data) {
   return {
