@@ -16,7 +16,7 @@ let publicKey =
 
 class App extends React.Component {
   state = {
-    input: publicKey
+    input: signature
   };
   render() {
     return (

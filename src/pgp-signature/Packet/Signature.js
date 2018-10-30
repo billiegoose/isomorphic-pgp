@@ -2,6 +2,7 @@ import defineLazyProp from "define-lazy-prop";
 import * as MPI from "../MPI.js";
 import { HashAlgorithm, PublicKeyAlgorithm } from "../constants.js";
 import * as SubpacketArray from "./SignatureSubpacket/SubpacketArray.js";
+import { concatenateUint8Arrays } from "./SignatureSubpacket/concatenateUint8Arrays.js";
 
 export function parse(b) {
   let packet = {};
@@ -39,4 +40,32 @@ export function parse(b) {
     }
   });
   return packet;
+}
+
+export function serialize(packet) {
+  let i = 0;
+  let b = new Uint8Array(10 + packet.hashed.length + packet.unhashed.length);
+  b[i++] = packet.version;
+  b[i++] = packet.type;
+  b[i++] = packet.alg;
+  b[i++] = packet.hash;
+  b[i++] = (packet.hashed.length >> 8) & 255;
+  b[i++] = packet.hashed.length & 255;
+  let hashed = SubpacketArray.serialize(packet.hashed.subpackets);
+  b.set(hashed, i);
+  i += packet.hashed.length;
+  b[i++] = (packet.unhashed.length >> 8) & 255;
+  b[i++] = packet.unhashed.length & 255;
+  let unhashed = SubpacketArray.serialize(packet.unhashed.subpackets);
+  b.set(unhashed, i);
+  i += packet.unhashed.length;
+  b[i++] = (packet.left16 >> 8) & 255;
+  b[i++] = packet.left16 & 255;
+  let buffers = [b];
+  switch (packet.alg) {
+    case 1: {
+      buffers.push(MPI.serialize(packet.mpi.signature));
+    }
+  }
+  return concatenateUint8Arrays(buffers);
 }

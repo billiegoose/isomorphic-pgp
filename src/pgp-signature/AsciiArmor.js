@@ -18,7 +18,6 @@ export function parse(str) {
 }
 
 export function serialize({ type, data }) {
-  console.log(crc24(data.buffer));
   let rawCRC = crc24(data);
   let crcBytes = new Uint8Array([
     (rawCRC >> 16) & 255,
