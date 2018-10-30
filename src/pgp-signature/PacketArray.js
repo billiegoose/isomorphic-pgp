@@ -1,4 +1,5 @@
 import * as Packet from "./Packet.js";
+import { concatenateUint8Arrays } from "./Packet/SignatureSubpacket/concatenateUint8Arrays.js";
 
 export function parse(_data) {
   let packets = [];
@@ -8,13 +9,19 @@ export function parse(_data) {
     i: 0
   };
   while (failsafe-- > 0 && a.i < a.b.length - 1) {
-    let packet = {};
     try {
-      Packet.parse(a, packet);
+      packets.push(Packet.parse(a));
     } catch (err) {
       break;
     }
-    packets.push(packet);
   }
   return packets;
+}
+
+export function serialize(packets) {
+  let buffers = [];
+  for (const packet of packets) {
+    buffers.push(Packet.serialize(packet));
+  }
+  return concatenateUint8Arrays(buffers);
 }

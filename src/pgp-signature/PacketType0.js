@@ -53,5 +53,60 @@ export function parse(a, packet) {
       }
     }
   });
-  return;
+  return packet;
+}
+
+export function serialize(packet) {
+  let lengthLength = {
+    0: 1,
+    1: 2,
+    2: 4,
+    3: 0
+  }[packet.length.type];
+
+  let data = new Uint8Array(1 + lengthLength + packet.length.value);
+  let i = 0;
+  const highbit = bits[7];
+  const packetType = 0 << 6;
+  const tag = (packet.tag << 2) & (bits[5] + bits[4] + bits[3] + bits[2]);
+  const lengthType = packet.length.type & (bits[1] + bits[0]);
+  // prettier-ignore
+  data[i++] = highbit + packetType + tag + lengthType
+  switch (packet.length.type) {
+    case 0: {
+      data[i++] = packet.length.value;
+      break;
+    }
+    case 1: {
+      data[i++] = (packet.length.value >> 8) & 255;
+      data[i++] = packet.length.value & 255;
+      break;
+    }
+    case 2: {
+      data[i++] = (packet.length.value >> 24) & 255;
+      data[i++] = (packet.length.value >> 16) & 255;
+      data[i++] = (packet.length.value >> 8) & 255;
+      data[i++] = packet.length.value & 255;
+      break;
+    }
+    case 3: {
+      break;
+    }
+  }
+  switch (packet.tag) {
+    case 2: {
+      data.set(SignaturePacket.serialize(packet.packet), i);
+      break;
+    }
+    case 6:
+    case 14: {
+      data.set(PublicKeyPacket.serialize(packet.packet), i);
+      break;
+    }
+    case 13: {
+      data.set(UserIdPacket.serialize(packet.packet), i);
+      break;
+    }
+  }
+  return data;
 }

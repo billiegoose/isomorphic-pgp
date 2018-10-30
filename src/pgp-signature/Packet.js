@@ -2,7 +2,8 @@ import { bits } from "./bits.js";
 import * as PacketType0 from "./PacketType0.js";
 import { PacketType } from "./constants.js";
 
-export function parse(a, packet) {
+export function parse(a) {
+  let packet = {};
   let byte1 = a.b[a.i];
   let _bit7_unused = byte1 & bits[7];
   if (_bit7_unused === 0) {
@@ -19,6 +20,18 @@ export function parse(a, packet) {
     }
     case 1: {
       throw new Error("New packets not supported yet");
+    }
+  }
+  return packet;
+}
+
+export function serialize(packet) {
+  switch (packet.type) {
+    case 0: {
+      return PacketType0.serialize(packet);
+    }
+    case 1: {
+      throw new Error("New packets are not supported yet");
     }
   }
 }
