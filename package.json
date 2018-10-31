@@ -4,6 +4,7 @@
   "description": "",
   "keywords": [],
   "main": "src/index.js",
+  "license": "MIT",
   "dependencies": {
     "arraybuffer-to-string": "1.0.2",
     "b64u-lite": "1.0.1",

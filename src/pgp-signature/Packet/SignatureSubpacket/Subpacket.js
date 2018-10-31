@@ -1,4 +1,7 @@
 import defineLazyProp from "define-lazy-prop";
+
+import * as UrlSafeBase64 from "../../UrlSafeBase64.js";
+
 import * as Length from "./Length.js";
 import * as CreationTime from "./CreationTime.js";
 import * as Issuer from "./Issuer.js";
@@ -18,7 +21,7 @@ export function parse(a) {
         return Issuer.parse(_data);
       }
       default: {
-        return { data: _data };
+        return { data: UrlSafeBase64.parse(_data) };
       }
     }
   });
@@ -38,7 +41,7 @@ export function serialize(subpacket) {
       break;
     }
     default: {
-      content = subpacket.subpacket.data;
+      content = UrlSafeBase64.serialize(subpacket.subpacket.data);
       break;
     }
   }

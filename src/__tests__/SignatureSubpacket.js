@@ -21,7 +21,7 @@ let fixtures = [
     length: 11,
     type: 64,
     subpacket: {
-      data: new Uint8Array(10)
+      data: "AAAAAAAAAAAAAA"
     }
   }
 ];

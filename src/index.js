@@ -45,7 +45,6 @@ class App extends React.Component {
 - Public Key message
   - [x] parse
   - [x] serialize
-  - [ ] fix whatever bug is causing the message to come out slightly differently
 - Make isomorphic
   - [ ] replace TextEncoder in UserId`}
         </pre>
