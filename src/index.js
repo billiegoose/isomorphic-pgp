@@ -1,7 +1,9 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import ObjectInspector from "react-object-inspector";
-import { SigningKey } from "./webcrypto/SigningKey.js";
+import { createPair } from "./webcrypto/createPair.js";
+import { exportPublicKey } from "./webcrypto/exportPublicKey.js";
+import { sign } from "./webcrypto/sign.js";
 
 import "./styles.css";
 
@@ -30,8 +32,9 @@ const printKey = txt => {
 
 class App extends React.Component {
   state = {
-    input: publicKey,
-    output: JSON.stringify(Message.parse(publicKey), null, 2)
+    input: signature,
+    output: JSON.stringify(Message.parse(signature), null, 2),
+    keys: {}
   };
   render() {
     return (
@@ -48,6 +51,40 @@ class App extends React.Component {
 - Make isomorphic
   - [ ] replace TextEncoder in UserId`}
         </pre>
+        <h1>PGP Key Generation and Signing (wip)</h1>
+        <button
+          onClick={async () => {
+            let keys = await createPair();
+            this.setState({ ...this.state, keys });
+            console.log(keys);
+          }}
+        >
+          createPair
+        </button>
+        <button
+          onClick={async () => {
+            let text = await exportPublicKey(
+              this.state.keys.publicKey,
+              "Mr. Test <test@example.com>"
+            );
+            this.setState({ ...this.state, input: text });
+            console.log(text);
+          }}
+        >
+          exportPublicKey
+        </button>
+        <button
+          onClick={async () => {
+            let text = await sign(
+              this.state.keys.privateKey,
+              new TextEncoder().encode("Hello World!")
+            );
+            this.setState({ ...this.state, input: text });
+            console.log(text);
+          }}
+        >
+          Sign
+        </button>
         <h1>PGP Key Parser</h1>
         <textarea
           cols="70"
@@ -69,8 +106,6 @@ class App extends React.Component {
           onChange={e => this.setState({ output: e.target.value })}
         />
         <pre>{printKey(this.state.output)}</pre>
-        <h1>PGP Key Generation and Signing (wip)</h1>
-        <button onClick={() => SigningKey()}>TEST</button>
       </div>
     );
   }
