@@ -1,7 +1,7 @@
 import * as Message from "../pgp-signature/Message.js";
 import * as UrlSafeBase64 from "../pgp-signature/UrlSafeBase64.js";
 
-export async function sign(nativePrivateKey, text2sign) {
+export async function sign(nativePrivateKey, text2sign, timestamp) {
   let signature = await crypto.subtle.sign(
     "RSASSA-PKCS1-v1_5",
     nativePrivateKey,
@@ -33,7 +33,7 @@ export async function sign(nativePrivateKey, text2sign) {
               {
                 length: 5,
                 type: 2,
-                subpacket: { creation: Math.floor(Date.now() / 1000) }
+                subpacket: { creation: timestamp }
               }
             ]
           },

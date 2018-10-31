@@ -88,7 +88,8 @@ class App extends React.Component {
           onClick={async () => {
             let text = await sign(
               this.state.keys.privateKey,
-              new TextEncoder().encode("Hello World!")
+              new TextEncoder().encode("Hello World!"),
+              1541017302
             );
             this.setState({ ...this.state, input: text });
             console.log(text);
