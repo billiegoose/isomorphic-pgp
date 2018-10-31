@@ -5,7 +5,9 @@
   "keywords": [],
   "main": "src/index.js",
   "dependencies": {
-    "array-buffer-to-hex": "1.0.0",
+    "arraybuffer-to-string": "1.0.2",
+    "b64u-lite": "1.0.1",
+    "clz-buffer": "1.0.0",
     "concat-buffers": "1.0.0",
     "crc": "3.8.0",
     "define-lazy-prop": "1.0.0",
@@ -13,7 +15,8 @@
     "react": "16.5.2",
     "react-dom": "16.5.2",
     "react-object-inspector": "0.2.1",
-    "react-scripts": "2.0.3"
+    "react-scripts": "2.0.3",
+    "string-to-arraybuffer": "1.0.1"
   },
   "devDependencies": {},
   "scripts": {

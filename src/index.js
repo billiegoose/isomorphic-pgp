@@ -30,31 +30,48 @@ const printKey = txt => {
 
 class App extends React.Component {
   state = {
-    input: signature,
-    output: ""
+    input: publicKey,
+    output: JSON.stringify(Message.parse(publicKey), null, 2)
   };
   render() {
     return (
       <div className="App">
+        <pre>
+          {`Status:
+
+- Detached Signature message
+  - [x] parse
+  - [x] serialize
+- Public Key message
+  - [x] parse
+  - [x] serialize
+  - [ ] fix whatever bug is causing the message to come out slightly differently
+- Make isomorphic
+  - [ ] replace TextEncoder in UserId`}
+        </pre>
         <h1>PGP Key Parser</h1>
         <textarea
+          cols="70"
+          rows="20"
           value={this.state.input}
           onChange={e => this.setState({ input: e.target.value })}
         />
-        <button onClick={() => SigningKey()}>TEST</button>
-        <h2>Start editing to see some magic happen!</h2>
         <ObjectInspector
           data={Message.parse(this.state.input)}
           name="input"
           initialExpandedPaths={["root", "root.*", "root.*.*", "root.*.*.*"]}
         />
         {JSON.stringify(Message.parse(this.state.input))}
-        <h1>PGP Key Serializer (wip, stupid Uint8Arrays)</h1>
+        <h1>PGP Key Serializer</h1>
         <textarea
+          cols="70"
+          rows="20"
           value={this.state.output}
           onChange={e => this.setState({ output: e.target.value })}
         />
         <pre>{printKey(this.state.output)}</pre>
+        <h1>PGP Key Generation and Signing (wip)</h1>
+        <button onClick={() => SigningKey()}>TEST</button>
       </div>
     );
   }

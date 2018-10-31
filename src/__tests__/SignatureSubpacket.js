@@ -13,7 +13,7 @@ let fixtures = [
     length: 9,
     type: 16,
     subpacket: {
-      issuer: new Uint8Array([0x96, 0x09, 0xb8, 0xa5, 0x92, 0x8b, 0xa6, 0xb9]),
+      issuer: "wpYJwrjCpcKSwovCpsK5",
       issuer_s: "9609b8a5928ba6b9"
     }
   },

@@ -28,9 +28,9 @@ export function serialize({ type, data }) {
   let base64 = Base64.serialize(data);
   // Wrap every 64 characters
   let matches = base64.match(/(.{1,64})/g);
-  return `-----BEGIN PGP SIGNATURE-----
+  return `-----BEGIN ${type}-----
 
 ${matches.join("\n")}
 =${crcBase64}
------END PGP SIGNATURE-----`;
+-----END ${type}-----`;
 }

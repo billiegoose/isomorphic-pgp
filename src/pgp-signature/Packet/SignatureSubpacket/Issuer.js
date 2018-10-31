@@ -1,12 +1,13 @@
-import uint8ArrayToHex from "array-buffer-to-hex";
+import * as UrlSafeBase64 from "../../UrlSafeBase64.js";
+import ab2str from "arraybuffer-to-string";
 
 export function parse(data) {
   return {
-    issuer: data,
-    issuer_s: uint8ArrayToHex(data)
+    issuer: UrlSafeBase64.parse(data),
+    issuer_s: ab2str(data, "hex")
   };
 }
 
 export function serialize(subpacket) {
-  return subpacket.issuer;
+  return UrlSafeBase64.serialize(subpacket.issuer);
 }

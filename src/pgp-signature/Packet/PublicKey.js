@@ -1,4 +1,5 @@
 import defineLazyProp from "define-lazy-prop";
+import concatenate from "concat-buffers";
 import * as MPI from "../MPI.js";
 import { PublicKeyAlgorithm } from "../constants.js";
 
@@ -22,4 +23,25 @@ export function parse(b) {
     }
   });
   return packet;
+}
+
+export function serialize(packet) {
+  let i = 0;
+  let b = new Uint8Array(6);
+  b[i++] = packet.version;
+  b[i++] = (packet.creation >> 24) & 255;
+  b[i++] = (packet.creation >> 16) & 255;
+  b[i++] = (packet.creation >> 8) & 255;
+  b[i++] = packet.creation & 255;
+  b[i++] = packet.alg;
+
+  let buffers = [b];
+  switch (packet.alg) {
+    case 1: {
+      buffers.push(MPI.serialize(packet.mpi.n));
+      buffers.push(MPI.serialize(packet.mpi.e));
+      break;
+    }
+  }
+  return concatenate(buffers);
 }

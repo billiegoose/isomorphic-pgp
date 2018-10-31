@@ -2,15 +2,16 @@ import * as MPI from "../pgp-signature/MPI.js";
 
 describe("MPI", () => {
   test("serialize -> parse", () => {
+    let fixtures = ["wpYJwrjCpcKSwovCpsK5", "AQAB"];
     // prettier-ignore
-    for (let value of [new Uint8Array([1, 0, 1]), new Uint8Array([191, 255, 254, 0, 1])]) {
-        let _data = MPI.serialize(value);
-        let a = {
-            b: _data,
-            i: 0
-        };
-        let result = MPI.parse(a);
-        expect(result).toEqual(value);
+    for (let fixture of fixtures) {
+      let _data = MPI.serialize(fixture);
+      let a = {
+        b: _data,
+        i: 0
+      };
+      let result = MPI.parse(a);
+      expect(result).toEqual(fixture);
     }
   });
 });

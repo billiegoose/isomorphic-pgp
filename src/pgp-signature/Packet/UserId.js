@@ -4,3 +4,8 @@ export function parse(buffer) {
     userid: dec.decode(buffer)
   };
 }
+
+export function serialize(packet) {
+  let enc = new TextEncoder();
+  return enc.encode(packet.userid);
+}
