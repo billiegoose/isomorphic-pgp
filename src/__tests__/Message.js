@@ -39,7 +39,7 @@ let fixture = {
               length: 9,
               type: 16,
               subpacket: {
-                issuer: "wpYJwrjCpcKSwovCpsK5",
+                issuer: "lgm4pZKLprk",
                 issuer_s: "9609b8a5928ba6b9"
               }
             }

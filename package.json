@@ -6,8 +6,8 @@
   "main": "src/index.js",
   "license": "MIT",
   "dependencies": {
-    "arraybuffer-to-string": "1.0.2",
-    "b64u-lite": "1.0.1",
+    "array-buffer-to-hex": "1.0.0",
+    "base64-js": "1.3.0",
     "clz-buffer": "1.0.0",
     "concat-buffers": "1.0.0",
     "crc": "3.8.0",
@@ -16,8 +16,7 @@
     "react": "16.5.2",
     "react-dom": "16.5.2",
     "react-object-inspector": "0.2.1",
-    "react-scripts": "2.0.3",
-    "string-to-arraybuffer": "1.0.1"
+    "react-scripts": "2.0.3"
   },
   "devDependencies": {},
   "scripts": {

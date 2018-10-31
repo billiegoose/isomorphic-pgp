@@ -4,6 +4,7 @@ import ObjectInspector from "react-object-inspector";
 import { createPair } from "./webcrypto/createPair.js";
 import { exportPublicKey } from "./webcrypto/exportPublicKey.js";
 import { sign } from "./webcrypto/sign.js";
+import { examplePair } from "./webcrypto/examplePair.js";
 
 import "./styles.css";
 
@@ -63,9 +64,19 @@ class App extends React.Component {
         </button>
         <button
           onClick={async () => {
+            let keys = await examplePair();
+            this.setState({ ...this.state, keys });
+            console.log(keys);
+          }}
+        >
+          load example keys
+        </button>
+        <button
+          onClick={async () => {
             let text = await exportPublicKey(
               this.state.keys.publicKey,
-              "Mr. Test <test@example.com>"
+              "CodeSandbox pgp-signature <test@example.com>",
+              1540996719
             );
             this.setState({ ...this.state, input: text });
             console.log(text);

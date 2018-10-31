@@ -1,7 +1,7 @@
 import * as UrlSafeBase64 from "../pgp-signature/UrlSafeBase64.js";
 import * as Message from "../pgp-signature/Message.js";
 
-export async function exportPublicKey(nativePublicKey, author) {
+export async function exportPublicKey(nativePublicKey, author, timestamp) {
   let jwk = await crypto.subtle.exportKey("jwk", nativePublicKey);
   if (jwk.kty !== "RSA" || jwk.alg !== "RS1")
     throw new Error("Only RSA keys supported at this time");
@@ -22,7 +22,7 @@ export async function exportPublicKey(nativePublicKey, author) {
         length: { type: 1, type_s: "two-octet length", value: 525 },
         packet: {
           version: 4,
-          creation: Math.floor(Date.now() / 1000),
+          creation: timestamp,
           alg: 1,
           alg_s: "RSA (Encrypt or Sign)",
           mpi: {

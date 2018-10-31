@@ -1,5 +1,5 @@
 import crc24 from "crc/crc24";
-import * as Base64 from "./Base64.js";
+import base64 from "base64-js";
 
 // TODO: Make the parser extract the Armor Header Line
 
@@ -13,7 +13,7 @@ export function parse(str) {
   if (matches === null)
     throw new Error("Unable to find main body of OpenPGP ASCII Armor");
   let text = matches[1].replace(/\n/g, "");
-  let data = Base64.parse(text);
+  let data = base64.toByteArray(text);
   return { type, data };
 }
 
@@ -24,10 +24,10 @@ export function serialize({ type, data }) {
     (rawCRC >> 8) & 255,
     rawCRC & 255
   ]);
-  let crcBase64 = Base64.serialize(crcBytes);
-  let base64 = Base64.serialize(data);
+  let crcBase64 = base64.fromByteArray(crcBytes);
+  let text = base64.fromByteArray(data);
   // Wrap every 64 characters
-  let matches = base64.match(/(.{1,64})/g);
+  let matches = text.match(/(.{1,64})/g);
   return `-----BEGIN ${type}-----
 
 ${matches.join("\n")}
