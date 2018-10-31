@@ -1,10 +1,10 @@
 import * as UrlSafeBase64 from "../../UrlSafeBase64.js";
-import ab2str from "arraybuffer-to-string";
+import arrayBufferToHex from "array-buffer-to-hex";
 
 export function parse(data) {
   return {
     issuer: UrlSafeBase64.parse(data),
-    issuer_s: ab2str(data, "hex")
+    issuer_s: arrayBufferToHex(data, "hex")
   };
 }
 

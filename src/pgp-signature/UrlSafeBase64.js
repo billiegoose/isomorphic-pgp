@@ -1,19 +1,20 @@
-import ab2str from "arraybuffer-to-string";
-import str2ab from "string-to-arraybuffer";
-import { toBase64Url, fromBase64Url } from "b64u-lite";
+import base64 from "base64-js";
 
 export function parse(buffer) {
-  let str = ab2str(buffer, "binary");
-  console.log("str", str);
-  let base64ustr = toBase64Url(str);
-  console.log("base64ustr", base64ustr);
-  return base64ustr;
+  let str = base64.fromByteArray(buffer);
+  str = str
+    .replace(/\//g, "_")
+    .replace(/\+/g, "-")
+    .replace(/=/g, "");
+  return str;
 }
 
 export function serialize(base64ustr) {
-  let str = fromBase64Url(base64ustr);
-  console.log("str2", str);
-  let buffer = str2ab(str);
-  console.log("buffer", buffer, buffer.byteLength);
-  return new Uint8Array(buffer);
+  // Note: base64-js can interpret both normal base64 (/+=) and url-safe (_-)
+  // so we don't need to convert it from the urlsafe to normal this time
+  // BUT we do need to add padding for some reason.
+  let modulo = base64ustr.length % 4;
+  let padlength = modulo > 0 ? 4 - modulo : 0;
+  let padding = "=".repeat(padlength);
+  return base64.toByteArray(base64ustr + padding);
 }
