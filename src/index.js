@@ -5,6 +5,7 @@ import { createPair } from "./webcrypto/createPair.js";
 import { exportPublicKey } from "./webcrypto/exportPublicKey.js";
 import { sign } from "./webcrypto/sign.js";
 import { examplePair } from "./webcrypto/examplePair.js";
+import { keyid } from "./webcrypto/keyid.js";
 
 import "./styles.css";
 
@@ -33,8 +34,8 @@ const printKey = txt => {
 
 class App extends React.Component {
   state = {
-    input: signature,
-    output: JSON.stringify(Message.parse(signature), null, 2),
+    input: publicKey,
+    output: JSON.stringify(Message.parse(publicKey), null, 2),
     keys: {}
   };
   render() {
@@ -70,6 +71,14 @@ class App extends React.Component {
           }}
         >
           load example keys
+        </button>
+        <button
+          onClick={async () => {
+            let ids = await keyid(JSON.parse(this.state.output));
+            console.log(ids);
+          }}
+        >
+          keyid
         </button>
         <button
           onClick={async () => {
