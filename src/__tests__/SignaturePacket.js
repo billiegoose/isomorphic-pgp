@@ -3,6 +3,7 @@ import * as SignaturePacket from "../pgp-signature/Packet/Signature.js";
 let fixture = {
   version: 4,
   type: 0,
+  type_s: "Signature of a binary document",
   alg: 1,
   alg_s: "RSA (Encrypt or Sign)",
   hash: 2,

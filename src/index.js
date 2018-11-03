@@ -84,6 +84,7 @@ class App extends React.Component {
           onClick={async () => {
             let text = await exportPublicKey(
               this.state.keys.publicKey,
+              this.state.keys.privateKey,
               "CodeSandbox pgp-signature <test@example.com>",
               1540996719
             );

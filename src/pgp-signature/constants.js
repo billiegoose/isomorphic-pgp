@@ -61,6 +61,24 @@ export const HashAlgorithm = {
   11: "SHA224"
 };
 
+export const SignatureType = {
+  0: "Signature of a binary document",
+  1: "Signature of a canonical text document",
+  2: "Standalone signature",
+  16: "Generic certification of a User ID and Public-Key packet",
+  17: "Persona certification of a User ID and Public-Key packet",
+  18: "Casual certification of a User ID and Public-Key packet",
+  19: "Positive certification of a User ID and Public-Key packet",
+  24: "Subkey Binding Signature",
+  25: "Primary Key Binding Signature",
+  31: "Signature directly on a key",
+  32: "Key revocation signature",
+  40: "Subkey revocation signature",
+  48: "Certification revocation signature",
+  64: "Timestamp signature",
+  80: "Third-Party Confirmation signature"
+};
+
 export const SignatureSubpacketType = {
   0: "Reserved",
   1: "Reserved",

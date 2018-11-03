@@ -1,6 +1,10 @@
 import defineLazyProp from "define-lazy-prop";
 import * as MPI from "../MPI.js";
-import { HashAlgorithm, PublicKeyAlgorithm } from "../constants.js";
+import {
+  SignatureType,
+  HashAlgorithm,
+  PublicKeyAlgorithm
+} from "../constants.js";
 import * as SubpacketArray from "./SignatureSubpacket/SubpacketArray.js";
 import concatenate from "concat-buffers";
 
@@ -9,6 +13,7 @@ export function parse(b) {
   let i = 0;
   packet.version = b[i++];
   packet.type = b[i++];
+  packet.type_s = SignatureType[packet.type];
   packet.alg = b[i++];
   packet.alg_s = PublicKeyAlgorithm[packet.alg];
   packet.hash = b[i++];
@@ -68,4 +73,27 @@ export function serialize(packet) {
     }
   }
   return concatenate(buffers);
+}
+
+// 5.2.4.  Computing Signatures
+export function serializeForHashTrailer(packet) {
+  let i = 0;
+  let b = new Uint8Array(6 + packet.hashed.length + 6);
+  b[i++] = packet.version;
+  b[i++] = packet.type;
+  b[i++] = packet.alg;
+  b[i++] = packet.hash;
+  b[i++] = (packet.hashed.length >> 8) & 255;
+  b[i++] = packet.hashed.length & 255;
+  let hashed = SubpacketArray.serialize(packet.hashed.subpackets);
+  b.set(hashed, i);
+  i += packet.hashed.length;
+  b[i++] = 4; // version 4
+  b[i++] = 255; // fixed number
+  let length = 6 + packet.hashed.length;
+  b[i++] = (length >> 24) & 255;
+  b[i++] = (length >> 16) & 255;
+  b[i++] = (length >> 8) & 255;
+  b[i++] = length & 255;
+  return b;
 }
