@@ -63,6 +63,8 @@ export async function exportPublicKey(
     nativePrivateKey,
     hash
   );
+  let signatureLength = signature.byteLength;
+  console.log("signatureLength", signatureLength);
   signature = UrlSafeBase64.parse(new Uint8Array(signature));
   console.log("signature", signature);
 
@@ -115,7 +117,7 @@ export async function exportPublicKey(
         length: {
           type: 1,
           type_s: "two-octet length",
-          value: 568
+          value: 12 + signatureLength
         },
         packet: completeSignaturePacket
       }
