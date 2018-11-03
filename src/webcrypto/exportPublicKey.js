@@ -1,6 +1,7 @@
 import * as UrlSafeBase64 from "../pgp-signature/UrlSafeBase64.js";
 import * as Message from "../pgp-signature/Message.js";
 import * as MPI from "../pgp-signature/MPI.js";
+import { calcKeyId } from "./calcKeyId.js";
 import { certificationSignatureHashData } from "../pgp-signature/certificationSignatureHashData.js";
 
 export async function exportPublicKey(
@@ -30,6 +31,9 @@ export async function exportPublicKey(
     }
   };
 
+  let { fingerprint, keyid } = await calcKeyId(publicKeyPacket);
+  console.log("keyid", keyid);
+
   let userIdPacket = { userid: author };
 
   let partialSignaturePacket = {
@@ -41,8 +45,16 @@ export async function exportPublicKey(
     hash: 2,
     hash_s: "SHA1",
     hashed: {
-      length: 0,
-      subpackets: []
+      length: 10,
+      subpackets: [
+        {
+          length: 9,
+          type: 16,
+          subpacket: {
+            issuer: UrlSafeBase64.parse(keyid)
+          }
+        }
+      ]
     }
   };
 
@@ -77,8 +89,23 @@ export async function exportPublicKey(
     hash: 2,
     hash_s: "SHA1",
     hashed: {
-      length: 0,
-      subpackets: []
+      length: 10 + 6,
+      subpackets: [
+        {
+          length: 9,
+          type: 16,
+          subpacket: {
+            issuer: UrlSafeBase64.parse(keyid)
+          }
+        },
+        {
+          length: 5,
+          type: 2,
+          subpacket: {
+            creation: timestamp
+          }
+        }
+      ]
     },
     unhashed: {
       length: 0,
@@ -117,7 +144,7 @@ export async function exportPublicKey(
         length: {
           type: 1,
           type_s: "two-octet length",
-          value: 12 + signatureLength
+          value: 12 + 10 + 6 + signatureLength
         },
         packet: completeSignaturePacket
       }

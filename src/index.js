@@ -5,7 +5,7 @@ import { createPair } from "./webcrypto/createPair.js";
 import { exportPublicKey } from "./webcrypto/exportPublicKey.js";
 import { sign } from "./webcrypto/sign.js";
 import { examplePair } from "./webcrypto/examplePair.js";
-import { keyid } from "./webcrypto/keyid.js";
+import { calcKeyId } from "./webcrypto/calcKeyId.js";
 
 import "./styles.css";
 
@@ -74,7 +74,8 @@ class App extends React.Component {
         </button>
         <button
           onClick={async () => {
-            let ids = await keyid(JSON.parse(this.state.output));
+            let keyjson = JSON.parse(this.state.output);
+            let ids = await calcKeyId(keyjson.packets[0].packet);
             console.log(ids);
           }}
         >
@@ -85,7 +86,7 @@ class App extends React.Component {
             let text = await exportPublicKey(
               this.state.keys.publicKey,
               this.state.keys.privateKey,
-              "CodeSandbox pgp-signature <test@example.com>",
+              "CodeSandbox <test@example.com>",
               1540996719
             );
             this.setState({ ...this.state, input: text });
