@@ -10,16 +10,7 @@ export async function certificationSignatureHashData(
 ) {
   let pubkeyBuffer = PublicKey.serializeForHash(publicKeyPacket);
   let useridBuffer = UserId.serializeForHash(userIdPacket);
-  let trailer = Signature.serializeForHashTrailer({
-    version: 4,
-    type: 16,
-    alg: 1,
-    hash: 2,
-    hashed: {
-      length: 0,
-      subpackets: []
-    }
-  });
+  let trailer = Signature.serializeForHashTrailer(signaturePacket);
   console.log("pubkeyBuffer", pubkeyBuffer);
   console.log("useridBuffer", useridBuffer);
   console.log("trailer", trailer);

@@ -6,6 +6,7 @@ import { exportPublicKey } from "./webcrypto/exportPublicKey.js";
 import { sign } from "./webcrypto/sign.js";
 import { examplePair } from "./webcrypto/examplePair.js";
 import { calcKeyId } from "./webcrypto/calcKeyId.js";
+import { verifySelfSignature } from "./webcrypto/verifySelfSignature.js";
 
 import "./styles.css";
 
@@ -42,7 +43,10 @@ class App extends React.Component {
     return (
       <div className="App">
         <pre>
-          {`Status:
+          {`Next steps:
+- [ ] See if we can verify the self-signatures of externally created PGP messages
+
+Status:
 
 - Detached Signature message
   - [x] parse
@@ -71,6 +75,14 @@ class App extends React.Component {
           }}
         >
           load example keys
+        </button>
+        <button
+          onClick={async () => {
+            let validity = await verifySelfSignature(this.state.input);
+            console.log("validity", validity);
+          }}
+        >
+          verify selfsig
         </button>
         <button
           onClick={async () => {
