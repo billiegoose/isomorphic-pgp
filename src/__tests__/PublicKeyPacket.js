@@ -12,10 +12,28 @@ let fixture = {
   }
 };
 
+let jwk = {
+  alg: "RS1",
+  e: "AQAB",
+  ext: true,
+  key_ops: ["verify"],
+  kty: "RSA",
+  n:
+    "t9CyovBE3Ec_firrtZazX1nmDRUMHax5OzxPKOpHyWL0OS8dnlZDL9xWo-nqL7lXeka-PkBfwOPp_m0qG31KByLoJ_DGwV0qwoo7s8j4fWp_PVFZcrsg0f0TVemRdnxhg3kol5T_dlkzWdCg1GCe5bNnRD7-hgAZdCTyN-ZgWaTiHzau70A6tUIqtNdO-90WehJSyjqYSvWqkvImCnuvW2zyoIbkO3uyZESw3I_3yx9ATGBZteGG-tsDrqF816BK7eh2bx6K4AXcqowedP7S73wqy6Dq_ifVHuS7hPumgGukUUmdngEapl8BAak2G6jRm_kYDFQ52KPonQclNwSEuJEnoaBgUKej9Z4PCkywDz1RdvhF-sbWckMet4gr_cnpyRHElyqriDQ3u_1QYaqe3iR1jQGsxBxjdBCWTCU40QJm8zvOq75Wbm1UzceZJf2zcci2vSB1VAAO5mTsYgBi7cHFRuLVzBiRYiwTEkiWkfsmc4TiCCIddmXLxWJjPF5uHTaqWTfLwdJhuMlUvFPPhUT6hSU0aL6AH6shKCUKoEMpK59aLCrRd3nER_IpoYRO97_MY3F4f71e65vAtQFxTespnru0giK-Tor7Rc_MDQ0enFOj4NBvtbbYWKeVHkoeEjPbH5hVM8z_tsCEX_pnYBnwh_VUzKg20qp0HNzGoVE"
+};
+
 describe("PublicKey Packet", () => {
   test("serialize -> parse", () => {
     let _data = PublicKeyPacket.serialize(fixture);
     let result = PublicKeyPacket.parse(_data);
     expect(result).toEqual(fixture);
+  });
+  test("fromJWK -> serialize -> parse -> toJWK", () => {
+    let packet = PublicKeyPacket.fromJWK(jwk, { creation: 1479107004 });
+    let _data = PublicKeyPacket.serialize(packet);
+    let _packet = PublicKeyPacket.parse(_data);
+    expect(packet).toEqual(_packet);
+    let _jwk = PublicKeyPacket.toJWK(_packet);
+    expect(jwk).toEqual(_jwk);
   });
 });

@@ -1,4 +1,5 @@
 import arrayBufferToHex from "array-buffer-to-hex";
+import * as Message from "../pgp-signature/Message.js";
 import * as PublicKey from "../pgp-signature/Packet/PublicKey.js";
 
 export async function calcKeyId(packet) {
@@ -8,4 +9,11 @@ export async function calcKeyId(packet) {
   let fingerprint = hash;
   let keyid = hash.slice(12);
   return { fingerprint, keyid };
+}
+
+export async function computeKeyId(openpgptext) {
+  let message = Message.parse(openpgptext);
+  let publicKeyPacket = message.packets[0].packet;
+  let { keyid } = await calcKeyId(publicKeyPacket);
+  return arrayBufferToHex(keyid);
 }

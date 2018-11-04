@@ -1,8 +1,10 @@
 import * as UrlSafeBase64 from "../pgp-signature/UrlSafeBase64.js";
 import * as Message from "../pgp-signature/Message.js";
 import * as MPI from "../pgp-signature/MPI.js";
+import * as PublicKey from "../pgp-signature/Packet/PublicKey.js";
 import { calcKeyId } from "./calcKeyId.js";
 import { certificationSignatureHashData } from "../pgp-signature/certificationSignatureHashData.js";
+import arrayBufferToHex from "array-buffer-to-hex";
 
 export async function exportPublicKey(
   nativePublicKey,
@@ -20,67 +22,14 @@ export async function exportPublicKey(
   let n = UrlSafeBase64.serialize(jwk.n);
   console.log("n", n);
 
-  let publicKeyPacket = {
-    version: 4,
-    creation: timestamp,
-    alg: 1,
-    alg_s: "RSA (Encrypt or Sign)",
-    mpi: {
-      n: jwk.n,
-      e: jwk.e
-    }
-  };
+  let publicKeyPacket = PublicKey.fromJWK(jwk, { creation: timestamp });
 
   let { fingerprint, keyid } = await calcKeyId(publicKeyPacket);
-  console.log("keyid", keyid);
+  console.log("keyid", arrayBufferToHex(keyid));
 
   let userIdPacket = { userid: author };
 
   let partialSignaturePacket = {
-    version: 4,
-    type: 16,
-    type_s: "Generic certification of a User ID and Public-Key packet",
-    alg: 1,
-    alg_s: "RSA (Encrypt or Sign)",
-    hash: 2,
-    hash_s: "SHA1",
-    hashed: {
-      length: 10,
-      subpackets: [
-        {
-          length: 9,
-          type: 16,
-          subpacket: {
-            issuer: UrlSafeBase64.parse(keyid)
-          }
-        }
-      ]
-    }
-  };
-
-  let buffer = await certificationSignatureHashData(
-    publicKeyPacket,
-    userIdPacket,
-    partialSignaturePacket
-  );
-  console.log("hash this!", buffer);
-  let hash = await crypto.subtle.digest("SHA-1", buffer);
-
-  let view = new Uint16Array(hash);
-  let left16 = view[0];
-  console.log("left16", left16);
-
-  let signature = await crypto.subtle.sign(
-    "RSASSA-PKCS1-v1_5",
-    nativePrivateKey,
-    hash
-  );
-  let signatureLength = signature.byteLength;
-  console.log("signatureLength", signatureLength);
-  signature = UrlSafeBase64.parse(new Uint8Array(signature));
-  console.log("signature", signature);
-
-  let completeSignaturePacket = {
     version: 4,
     type: 16,
     type_s: "Generic certification of a User ID and Public-Key packet",
@@ -106,7 +55,33 @@ export async function exportPublicKey(
           }
         }
       ]
-    },
+    }
+  };
+
+  let buffer = await certificationSignatureHashData(
+    publicKeyPacket,
+    userIdPacket,
+    partialSignaturePacket
+  );
+  console.log("hash this!", buffer);
+  let hash = await crypto.subtle.digest("SHA-1", buffer);
+  console.log("hash", arrayBufferToHex(hash)); // ef0a51219d056749a63fda970f5a504e451de039
+
+  let view = new Uint16Array(hash);
+  let left16 = view[0];
+  console.log("left16", left16);
+
+  let signature = await crypto.subtle.sign(
+    "RSASSA-PKCS1-v1_5",
+    nativePrivateKey,
+    hash
+  );
+  let signatureLength = signature.byteLength;
+  console.log("signatureLength", signatureLength);
+  signature = UrlSafeBase64.parse(new Uint8Array(signature));
+  console.log("signature", signature);
+
+  let completeSignaturePacket = Object.assign({}, partialSignaturePacket, {
     unhashed: {
       length: 0,
       subpackets: []
@@ -115,7 +90,7 @@ export async function exportPublicKey(
     mpi: {
       signature
     }
-  };
+  });
 
   let message = {
     type: "PGP PUBLIC KEY BLOCK",

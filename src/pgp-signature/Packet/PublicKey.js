@@ -55,3 +55,30 @@ export function serializeForHash(packet) {
   ];
   return concatenate(buffers);
 }
+
+export function fromJWK(jwk, { creation }) {
+  let packet = {};
+  packet.version = 4;
+  packet.creation = creation;
+  if (jwk.kty === "RSA") {
+    packet.alg = 1;
+    packet.alg_s = PublicKeyAlgorithm[packet.alg];
+    packet.mpi = {};
+    packet.mpi.n = jwk.n;
+    packet.mpi.e = jwk.e;
+  }
+  return packet;
+}
+
+export function toJWK(packet) {
+  const jwk = {};
+  if (packet.alg === 1) {
+    jwk.kty = "RSA";
+    jwk.alg = "RS1";
+    jwk.e = packet.mpi.e;
+    jwk.n = packet.mpi.n;
+  }
+  jwk.key_ops = ["verify"];
+  jwk.ext = true;
+  return jwk;
+}

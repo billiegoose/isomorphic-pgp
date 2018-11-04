@@ -5,7 +5,7 @@ import { createPair } from "./webcrypto/createPair.js";
 import { exportPublicKey } from "./webcrypto/exportPublicKey.js";
 import { sign } from "./webcrypto/sign.js";
 import { examplePair } from "./webcrypto/examplePair.js";
-import { calcKeyId } from "./webcrypto/calcKeyId.js";
+import { calcKeyId, computeKeyId } from "./webcrypto/calcKeyId.js";
 import { verifySelfSignature } from "./webcrypto/verifySelfSignature.js";
 
 import "./styles.css";
@@ -69,12 +69,23 @@ Status:
         </button>
         <button
           onClick={async () => {
+            this.setState({
+              ...this.state,
+              input: publicKey,
+              output: JSON.stringify(Message.parse(publicKey), null, 2)
+            });
+          }}
+        >
+          load example PGP
+        </button>
+        <button
+          onClick={async () => {
             let keys = await examplePair();
             this.setState({ ...this.state, keys });
             console.log(keys);
           }}
         >
-          load example keys
+          load example JWK
         </button>
         <button
           onClick={async () => {
@@ -86,9 +97,8 @@ Status:
         </button>
         <button
           onClick={async () => {
-            let keyjson = JSON.parse(this.state.output);
-            let ids = await calcKeyId(keyjson.packets[0].packet);
-            console.log(ids);
+            let id = await computeKeyId(this.state.input);
+            console.log(id);
           }}
         >
           keyid
