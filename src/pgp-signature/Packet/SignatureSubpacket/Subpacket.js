@@ -5,6 +5,7 @@ import * as UrlSafeBase64 from "../../UrlSafeBase64.js";
 import * as Length from "./Length.js";
 import * as CreationTime from "./CreationTime.js";
 import * as Issuer from "./Issuer.js";
+import * as KeyFlags from "./KeyFlags.js";
 
 export function parse(a) {
   let subpacket = {};
@@ -19,6 +20,9 @@ export function parse(a) {
       }
       case 16: {
         return Issuer.parse(_data);
+      }
+      case 27: {
+        return KeyFlags.parse(_data);
       }
       default: {
         return { data: UrlSafeBase64.parse(_data) };
@@ -38,6 +42,11 @@ export function serialize(subpacket) {
     }
     case 16: {
       content = Issuer.serialize(subpacket.subpacket);
+      break;
+    }
+    case 27: {
+      content = KeyFlags.serialize(subpacket.subpacket);
+      console.log("content", content);
       break;
     }
     default: {

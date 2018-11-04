@@ -31,27 +31,29 @@ export async function exportPublicKey(
 
   let partialSignaturePacket = {
     version: 4,
-    type: 16,
-    type_s: "Generic certification of a User ID and Public-Key packet",
+    // type: 16,
+    // type_s: "Generic certification of a User ID and Public-Key packet",
+    type: 19,
+    type_s: "Positive certification of a User ID and Public-Key packet",
     alg: 1,
     alg_s: "RSA (Encrypt or Sign)",
     hash: 2,
     hash_s: "SHA1",
     hashed: {
-      length: 10 + 6,
+      length: 6 + 3,
       subpackets: [
-        {
-          length: 9,
-          type: 16,
-          subpacket: {
-            issuer: UrlSafeBase64.parse(keyid)
-          }
-        },
         {
           length: 5,
           type: 2,
           subpacket: {
             creation: timestamp
+          }
+        },
+        {
+          length: 2,
+          type: 27,
+          subpacket: {
+            flags: 3
           }
         }
       ]
@@ -65,11 +67,15 @@ export async function exportPublicKey(
   );
   console.log("hash this!", buffer);
   let hash = await crypto.subtle.digest("SHA-1", buffer);
-  console.log("hash", arrayBufferToHex(hash)); // ef0a51219d056749a63fda970f5a504e451de039
+  hash = new Uint8Array(hash);
+  console.log("hash", new Uint8Array(hash));
+  console.log("hash", arrayBufferToHex(new Uint8Array(hash))); // ef0a51219d056749a63fda970f5a504e451de039
 
-  let view = new Uint16Array(hash);
-  let left16 = view[0];
+  let left16 = (hash[0] << 8) + hash[1];
   console.log("left16", left16);
+
+  // TODO: Wrap `hash` in the dumbass EMSA-PKCS1-v1_5 padded message format:
+  // https://github.com/openpgpjs/openpgpjs/blob/a35b4d28e0215c3a6654a4401c4e7e085b55e220/src/crypto/pkcs1.js
 
   let signature = await crypto.subtle.sign(
     "RSASSA-PKCS1-v1_5",
@@ -83,8 +89,16 @@ export async function exportPublicKey(
 
   let completeSignaturePacket = Object.assign({}, partialSignaturePacket, {
     unhashed: {
-      length: 0,
-      subpackets: []
+      length: 10,
+      subpackets: [
+        {
+          length: 9,
+          type: 16,
+          subpacket: {
+            issuer: UrlSafeBase64.parse(keyid)
+          }
+        }
+      ]
     },
     left16,
     mpi: {
@@ -119,7 +133,7 @@ export async function exportPublicKey(
         length: {
           type: 1,
           type_s: "two-octet length",
-          value: 12 + 10 + 6 + signatureLength
+          value: 12 + 6 + 3 + 10 + signatureLength
         },
         packet: completeSignaturePacket
       }
