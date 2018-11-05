@@ -4,6 +4,7 @@ import * as MPI from "../pgp-signature/MPI.js";
 import * as PublicKey from "../pgp-signature/Packet/PublicKey.js";
 import { calcKeyId } from "./calcKeyId.js";
 import { certificationSignatureHashData } from "../pgp-signature/certificationSignatureHashData.js";
+import * as EMSA from "../pgp-signature/emsa.js";
 import arrayBufferToHex from "array-buffer-to-hex";
 
 export async function exportPublicKey(
@@ -76,6 +77,12 @@ export async function exportPublicKey(
 
   // TODO: Wrap `hash` in the dumbass EMSA-PKCS1-v1_5 padded message format:
   // https://github.com/openpgpjs/openpgpjs/blob/a35b4d28e0215c3a6654a4401c4e7e085b55e220/src/crypto/pkcs1.js
+  console.log("nativePrivateKey", nativePrivateKey);
+  hash = EMSA.encode(
+    "SHA1",
+    hash,
+    nativePrivateKey.algorithm.modulusLength / 8
+  );
 
   let signature = await crypto.subtle.sign(
     "RSASSA-PKCS1-v1_5",

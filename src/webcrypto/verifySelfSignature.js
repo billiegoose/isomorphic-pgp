@@ -1,6 +1,7 @@
 import * as Message from "../pgp-signature/Message.js";
 import * as PublicKey from "../pgp-signature/Packet/PublicKey.js";
 import * as UrlSafeBase64 from "../pgp-signature/UrlSafeBase64.js";
+import * as EMSA from "../pgp-signature/emsa.js";
 import { certificationSignatureHashData } from "../pgp-signature/certificationSignatureHashData.js";
 import arrayBufferToHex from "array-buffer-to-hex";
 
@@ -36,6 +37,11 @@ export async function verifySelfSignature(openpgpPublicKey) {
     true,
     ["verify"]
   );
+
+  // Wrap `hash` in the dumbass EMSA-PKCS1-v1_5 padded message format.
+  console.log("nativePublicKey", nativePublicKey);
+  hash = EMSA.encode("SHA1", hash, nativePublicKey.algorithm.modulusLength / 8);
+  console.log("hash", arrayBufferToHex(hash));
 
   let signature = UrlSafeBase64.serialize(selfSignaturePacket.mpi.signature);
   console.log("signature", signature.slice(10));
