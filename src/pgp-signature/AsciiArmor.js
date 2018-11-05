@@ -1,8 +1,6 @@
 import crc24 from "crc/crc24";
 import base64 from "base64-js";
 
-// TODO: Make the parser extract the Armor Header Line
-
 export function parse(str) {
   let matches;
   matches = str.match(/-----BEGIN (.*)-----/);

@@ -46,7 +46,6 @@ export function serialize(subpacket) {
     }
     case 27: {
       content = KeyFlags.serialize(subpacket.subpacket);
-      console.log("content", content);
       break;
     }
     default: {

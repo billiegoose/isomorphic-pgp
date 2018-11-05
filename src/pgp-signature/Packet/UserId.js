@@ -14,7 +14,6 @@ export function serialize(packet) {
 
 export function serializeForHash(packet) {
   let buffer = serialize(packet);
-  console.log(buffer);
   let buffers = [
     new Uint8Array([
       0xb4,

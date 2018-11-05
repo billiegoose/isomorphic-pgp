@@ -1,15 +1,10 @@
+import BN from "bn.js";
 import * as Message from "../pgp-signature/Message.js";
 import * as PublicKey from "../pgp-signature/Packet/PublicKey.js";
 import * as UrlSafeBase64 from "../pgp-signature/UrlSafeBase64.js";
 import * as EMSA from "../pgp-signature/emsa.js";
 import { certificationSignatureHashData } from "../pgp-signature/certificationSignatureHashData.js";
 import arrayBufferToHex from "array-buffer-to-hex";
-
-async function printHash(buffer) {
-  let hash = await crypto.subtle.digest("SHA-1", buffer);
-  hash = new Uint8Array(hash);
-  console.log("hash", arrayBufferToHex(hash));
-}
 
 export async function verifySelfSignature(openpgpPublicKey) {
   let parsed = Message.parse(openpgpPublicKey);
@@ -27,29 +22,24 @@ export async function verifySelfSignature(openpgpPublicKey) {
   console.log("hash", arrayBufferToHex(hash)); // 90c9b728f814a93191cc1551493f06c88159ec68
   console.log("left16", selfSignaturePacket.left16.toString(16));
 
-  let nativePublicKey = await crypto.subtle.importKey(
-    "jwk",
-    PublicKey.toJWK(publicKeyPacket),
-    {
-      name: "RSASSA-PKCS1-v1_5",
-      hash: "SHA-1"
-    },
-    true,
-    ["verify"]
-  );
+  let jwkPublicKey = PublicKey.toJWK(publicKeyPacket);
+
+  let n = UrlSafeBase64.serialize(publicKeyPacket.mpi.n);
 
   // Wrap `hash` in the dumbass EMSA-PKCS1-v1_5 padded message format.
-  console.log("nativePublicKey", nativePublicKey);
-  hash = EMSA.encode("SHA1", hash, nativePublicKey.algorithm.modulusLength / 8);
-  console.log("hash", arrayBufferToHex(hash));
+  hash = EMSA.encode("SHA1", hash, n.length);
 
   let signature = UrlSafeBase64.serialize(selfSignaturePacket.mpi.signature);
-  console.log("signature", signature.slice(10));
-  let valid = await crypto.subtle.verify(
-    "RSASSA-PKCS1-v1_5",
-    nativePublicKey,
-    signature,
-    hash
-  );
+
+  let S = new BN(signature);
+  let N = new BN(UrlSafeBase64.serialize(publicKeyPacket.mpi.n));
+  let E = new BN(UrlSafeBase64.serialize(publicKeyPacket.mpi.e));
+  const nred = new BN.red(N);
+  // Lifted from https://github.com/openpgpjs/openpgpjs/blob/master/src/crypto/public_key/rsa.js
+  const _hash = S.toRed(nred)
+    .redPow(E)
+    .toArrayLike(Uint8Array, "be", N.byteLength());
+
+  let valid = hash.every((byte, index) => byte === _hash[index]);
   return valid;
 }
