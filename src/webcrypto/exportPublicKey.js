@@ -1,4 +1,5 @@
-import BN from "bn.js";
+// import BN from "bn.js";
+import { BigInteger } from "jsbn";
 import * as BigBuf from "./BigBuf.js";
 import * as UrlSafeBase64 from "../pgp-signature/UrlSafeBase64.js";
 import * as Message from "../pgp-signature/Message.js";
@@ -9,15 +10,9 @@ import { certificationSignatureHashData } from "../pgp-signature/certificationSi
 import * as EMSA from "../pgp-signature/emsa.js";
 import arrayBufferToHex from "array-buffer-to-hex";
 
-export async function exportPublicKey(
-  nativePublicKey,
-  nativePrivateKey,
-  author,
-  timestamp
-) {
+export async function exportPublicKey(nativePublicKey, nativePrivateKey, author, timestamp) {
   let jwk = await crypto.subtle.exportKey("jwk", nativePublicKey);
-  if (jwk.kty !== "RSA" || jwk.alg !== "RS1")
-    throw new Error("Only RSA keys supported at this time");
+  if (jwk.kty !== "RSA" || jwk.alg !== "RS1") throw new Error("Only RSA keys supported at this time");
   // TODO: I need to figure out how to automatically adjust the lengths based on the data.
   console.log(jwk);
   let e = UrlSafeBase64.serialize(jwk.e);
@@ -63,11 +58,7 @@ export async function exportPublicKey(
     }
   };
 
-  let buffer = await certificationSignatureHashData(
-    publicKeyPacket,
-    userIdPacket,
-    partialSignaturePacket
-  );
+  let buffer = await certificationSignatureHashData(publicKeyPacket, userIdPacket, partialSignaturePacket);
   console.log("hash this!", buffer);
   let hash = await crypto.subtle.digest("SHA-1", buffer);
   hash = new Uint8Array(hash);
@@ -79,44 +70,37 @@ export async function exportPublicKey(
 
   // TODO: Wrap `hash` in the dumbass EMSA-PKCS1-v1_5 padded message format:
   // https://github.com/openpgpjs/openpgpjs/blob/a35b4d28e0215c3a6654a4401c4e7e085b55e220/src/crypto/pkcs1.js
-  hash = EMSA.encode(
-    "SHA1",
-    hash,
-    nativePrivateKey.algorithm.modulusLength / 8
-  );
+  hash = EMSA.encode("SHA1", hash, nativePrivateKey.algorithm.modulusLength / 8);
 
   // SIGN
   // let signature =
   let _jwk = await crypto.subtle.exportKey("jwk", nativePrivateKey);
   console.log("nativePrivateKey", _jwk);
 
-  console.time("pow");
-  let M = new BN(hash);
-  let N = new BN(UrlSafeBase64.serialize(_jwk.n));
-  // let E = new BN(UrlSafeBase64.serialize(_jwk.e));
-  let D = new BN(UrlSafeBase64.serialize(_jwk.d));
-
-  // Lifted from https://github.com/openpgpjs/openpgpjs/blob/master/src/crypto/public_key/rsa.js
-  const nred = new BN.red(N);
-  let S = M.toRed(nred).redPow(D);
-  let signature = S.toArrayLike(Uint8Array);
-  console.log("signature", signature);
-  console.timeEnd("pow");
-
-  // console.time("bigint");
-  // let _N = BigBuf.toBigInt(UrlSafeBase64.serialize(_jwk.n));
+  // console.time("bn.js"); // 1339ms
+  // let M = new BN(hash);
+  // let N = new BN(UrlSafeBase64.serialize(_jwk.n));
   // // let E = new BN(UrlSafeBase64.serialize(_jwk.e));
-  // let _D = BigBuf.toBigInt(UrlSafeBase64.serialize(_jwk.d));
-  // let _M = BigBuf.toBigInt(hash);
+  // let D = new BN(UrlSafeBase64.serialize(_jwk.d));
 
-  // let _S = _M % _N;
-  // for (let i = BigInt(0); i < _D; i++) {
-  //   _S = (_S * _M) & _N;
-  // }
-  // // let _S = (_M ** _D) % _N;
-  // let _signature = BigBuf.toBuffer(_S);
-  // console.log("_signature", _signature);
-  // console.timeEnd("bigint");
+  // // Lifted from https://github.com/openpgpjs/openpgpjs/blob/master/src/crypto/public_key/rsa.js
+  // const nred = new BN.red(N);
+  // let S = M.toRed(nred).redPow(D);
+  // let signature = S.toArrayLike(Uint8Array);
+  // console.log("signature", signature);
+  // console.timeEnd("bn.js");
+
+  console.time("jsbn"); // 679ms
+  let N = new BigInteger(arrayBufferToHex(UrlSafeBase64.serialize(_jwk.n)), 16);
+  // let E = new BN(UrlSafeBase64.serialize(_jwk.e));
+  let D = new BigInteger(arrayBufferToHex(UrlSafeBase64.serialize(_jwk.d)), 16);
+  let M = new BigInteger(arrayBufferToHex(hash), 16);
+
+  let S = M.modPow(D, N);
+  // let _S = (_M ** _D) % _N;
+  let signature = new Uint8Array(S.toByteArray().slice(1));
+  console.log("_signature", signature);
+  console.timeEnd("jsbn");
 
   // let signature = await crypto.subtle.sign(
   //   "RSASSA-PKCS1-v1_5",

@@ -14,6 +14,7 @@
     "concat-buffers": "1.0.0",
     "crc": "3.8.0",
     "define-lazy-prop": "1.0.0",
+    "jsbn": "1.1.0",
     "react": "16.5.2",
     "react-dom": "16.5.2",
     "react-object-inspector": "0.2.1",
