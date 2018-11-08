@@ -91,13 +91,30 @@ export async function exportPublicKey(nativePublicKey, nativePrivateKey, author,
   // console.timeEnd("bn.js");
 
   console.time("jsbn"); // 679ms
+  let P = new BigInteger(arrayBufferToHex(UrlSafeBase64.serialize(_jwk.p)), 16);
+  let Q = new BigInteger(arrayBufferToHex(UrlSafeBase64.serialize(_jwk.q)), 16);
+  let U = P.modInverse(Q);
   let N = new BigInteger(arrayBufferToHex(UrlSafeBase64.serialize(_jwk.n)), 16);
   // let E = new BN(UrlSafeBase64.serialize(_jwk.e));
   let D = new BigInteger(arrayBufferToHex(UrlSafeBase64.serialize(_jwk.d)), 16);
   let M = new BigInteger(arrayBufferToHex(hash), 16);
 
-  let S = M.modPow(D, N);
-  // let _S = (_M ** _D) % _N;
+  // // Straightforward solution: ~ 679ms
+  // console.time("standard");
+  // let S = M.modPow(D, N);
+  // console.timeEnd("standard");
+
+  // Fast solution using Chinese Remainder Theorem: ~184ms
+  console.time("CRT"); //
+  let ONE = new BigInteger("01", 16);
+  let DP = D.mod(P.subtract(ONE));
+  let DQ = D.mod(Q.subtract(ONE));
+  let M1 = M.modPow(DP, P);
+  let M2 = M.modPow(DQ, Q);
+  let H = U.multiply(M2.subtract(M1)).mod(Q);
+  let S = M1.add(H.multiply(P));
+  console.timeEnd("CRT");
+
   let signature = new Uint8Array(S.toByteArray().slice(1));
   console.log("_signature", signature);
   console.timeEnd("jsbn");

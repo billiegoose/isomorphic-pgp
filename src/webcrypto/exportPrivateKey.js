@@ -103,23 +103,36 @@ export async function exportPrivateKey(nativePrivateKey, author, timestamp) {
   // console.log("signature", signature);
   // console.timeEnd("bn.js");
 
-  console.time("jsbn"); // 679ms
   let N = new BigInteger(arrayBufferToHex(UrlSafeBase64.serialize(_jwk.n)), 16);
   // let E = new BN(UrlSafeBase64.serialize(_jwk.e));
   let D = new BigInteger(arrayBufferToHex(UrlSafeBase64.serialize(_jwk.d)), 16);
   let M = new BigInteger(arrayBufferToHex(hash), 16);
 
-  let S = M.modPow(D, N);
-  // let _S = (_M ** _D) % _N;
-  let signature = new Uint8Array(S.toByteArray().slice(1));
-  console.log("_signature", signature);
-  console.timeEnd("jsbn");
+  // // Straightforward solution: ~ 679ms
+  // console.time("standard");
+  // let S = M.modPow(D, N);
+  // console.timeEnd("standard");
 
-  // let signature = await crypto.subtle.sign(
-  //   "RSASSA-PKCS1-v1_5",
-  //   nativePrivateKey,
-  //   hash
-  // );
+  // Fast solution using Chinese Remainder Theorem: ~184ms
+  // from libgcryp docs:
+  /*
+   *      m1 = c ^ (d mod (p-1)) mod p
+   *      m2 = c ^ (d mod (q-1)) mod q
+   *      h = u * (m2 - m1) mod q
+   *      m = m1 + h * p
+   */
+  console.time("CRT"); //
+  let ONE = new BigInteger("01", 16);
+  let DP = D.mod(P.subtract(ONE));
+  let DQ = D.mod(Q.subtract(ONE));
+  let M1 = M.modPow(DP, P);
+  let M2 = M.modPow(DQ, Q);
+  let H = U.multiply(M2.subtract(M1)).mod(Q);
+  let S = M1.add(H.multiply(P));
+  console.timeEnd("CRT");
+
+  let signature = new Uint8Array(S.toByteArray().slice(1));
+  console.log("_signature2", signature);
 
   let signatureLength = signature.byteLength;
   console.log("signatureLength", signatureLength);
