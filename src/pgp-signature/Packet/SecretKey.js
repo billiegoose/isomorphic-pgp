@@ -100,7 +100,10 @@ export function fromJWK(jwk, { creation }) {
     packet.mpi.d = jwk.d;
     packet.mpi.p = jwk.p;
     packet.mpi.q = jwk.q;
-    packet.mpi.u = null; // TODO: Figure out how to compute u
+    // TODO: Figure out how to compute u.
+    // I think it's
+    // packet.mpi.u = new BigInteger(p).modInverse(q)
+    packet.mpi.u = null;
   }
   return packet;
 }
@@ -115,7 +118,7 @@ export function toJWK(packet) {
     jwk.d = packet.mpi.d;
     jwk.p = packet.mpi.p;
     jwk.q = packet.mpi.q;
-    let u = packet.mpi.u;
+    // Note: JWK does not export a 'u' parameter
   }
   jwk.key_ops = ["sign"];
   jwk.ext = true;

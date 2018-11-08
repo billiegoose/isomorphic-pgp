@@ -1,10 +1,7 @@
 // import BN from "bn.js";
 import { BigInteger } from "jsbn";
-import * as BigBuf from "./BigBuf.js";
 import * as UrlSafeBase64 from "../pgp-signature/UrlSafeBase64.js";
 import * as Message from "../pgp-signature/Message.js";
-import * as MPI from "../pgp-signature/MPI.js";
-import * as PublicKey from "../pgp-signature/Packet/PublicKey.js";
 import * as SecretKey from "../pgp-signature/Packet/SecretKey.js";
 import { calcKeyId } from "./calcKeyId.js";
 import { certificationSignatureHashData } from "../pgp-signature/certificationSignatureHashData.js";
@@ -12,21 +9,33 @@ import * as EMSA from "../pgp-signature/emsa.js";
 import arrayBufferToHex from "array-buffer-to-hex";
 
 // TODO: WORK IN PROGRESS
-export async function exportPrivateKey(nativePublicKey, nativePrivateKey, author, timestamp) {
-  let jwk = await crypto.subtle.exportKey("jwk", nativePublicKey);
+export async function exportPrivateKey(nativePrivateKey, author, timestamp) {
+  let jwk = await crypto.subtle.exportKey("jwk", nativePrivateKey);
   if (jwk.kty !== "RSA" || jwk.alg !== "RS1") throw new Error("Only RSA keys supported at this time");
-  let jwkPrivate = await crypto.subtle.exportKey("jwk", nativePrivateKey);
-  if (jwkPrivate.kty !== "RSA" || jwkPrivate.alg !== "RS1") throw new Error("Only RSA keys supported at this time");
-  // TODO: I need to figure out how to automatically adjust the lengths based on the data.
+
   console.log(jwk);
   let e = UrlSafeBase64.serialize(jwk.e);
   console.log("e", e);
   let n = UrlSafeBase64.serialize(jwk.n);
   console.log("n", n);
+  let d = UrlSafeBase64.serialize(jwk.d);
+  console.log("d", d);
+  let p = UrlSafeBase64.serialize(jwk.p);
+  console.log("p", p);
+  let q = UrlSafeBase64.serialize(jwk.q);
+  console.log("q", q);
 
-  let publicKeyPacket = PublicKey.fromJWK(jwk, { creation: timestamp });
+  let secretKeyPacket = SecretKey.fromJWK(jwk, { creation: timestamp });
 
-  let { fingerprint, keyid } = await calcKeyId(publicKeyPacket);
+  // Compute missing parameter u
+  let P = new BigInteger(arrayBufferToHex(p), 16);
+  let Q = new BigInteger(arrayBufferToHex(q), 16);
+  let U = P.modInverse(Q);
+  let _U = new Uint8Array(U.toByteArray());
+  let u = UrlSafeBase64.parse(_U);
+  secretKeyPacket.mpi.u = u;
+
+  let { fingerprint, keyid } = await calcKeyId(secretKeyPacket);
   console.log("keyid", arrayBufferToHex(keyid));
 
   let userIdPacket = { userid: author };
@@ -62,7 +71,7 @@ export async function exportPrivateKey(nativePublicKey, nativePrivateKey, author
     }
   };
 
-  let buffer = await certificationSignatureHashData(publicKeyPacket, userIdPacket, partialSignaturePacket);
+  let buffer = await certificationSignatureHashData(secretKeyPacket, userIdPacket, partialSignaturePacket);
   console.log("hash this!", buffer);
   let hash = await crypto.subtle.digest("SHA-1", buffer);
   hash = new Uint8Array(hash);
@@ -136,16 +145,18 @@ export async function exportPrivateKey(nativePublicKey, nativePrivateKey, author
     }
   });
 
+  console.log("secretKeyPAcket.length", SecretKey.serialize(secretKeyPacket).length);
+
   let message = {
     type: "PGP PRIVATE KEY BLOCK",
     packets: [
       {
         type: 0,
         type_s: "old",
-        tag: 4,
+        tag: 5,
         tag_s: "Secret-Key Packet",
-        length: { type: 1, type_s: "two-octet length", value: 525 },
-        packet: publicKeyPacket
+        length: { type: 1, type_s: "two-octet length", value: 1816 },
+        packet: secretKeyPacket
       },
       {
         type: 0,

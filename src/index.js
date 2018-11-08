@@ -3,6 +3,7 @@ import ReactDOM from "react-dom";
 import ObjectInspector from "react-object-inspector";
 import { createPair } from "./webcrypto/createPair.js";
 import { exportPublicKey } from "./webcrypto/exportPublicKey.js";
+import { exportPrivateKey } from "./webcrypto/exportPrivateKey.js";
 import { sign } from "./webcrypto/sign.js";
 import { examplePair } from "./webcrypto/examplePair.js";
 import { calcKeyId, computeKeyId } from "./webcrypto/calcKeyId.js";
@@ -47,7 +48,6 @@ class App extends React.Component {
       <div className="App">
         <pre>
           {`Next steps:
-- [ ] Export JWK as private key message
 - [ ] Create type 0 (sig of binary document) Signature Packets
 - [ ] Verify type 0 (sig of binary document) Signature Packets
 
@@ -59,19 +59,20 @@ Status:
 - Public Key message
   - [x] parse
   - [x] serialize
-  - [x] export JWK as PGP Public Key Message
+  - [x] export JWK as PGP Public Key Message (that can be imported by GPG)
 - Private Key message
   - [x] parse
   - [x] serialize
-  - [ ] export JWK as PGP Private Key Message
+  - [x] export JWK as PGP Private Key Message (that can be imported by GPG)
 - Can verify the self-signatures of
   - [x] externally created PGP Public Key Messages
   - [x] externally created PGP Private Key Messages
   - [x] internally created JWK that was exported as a PGP Public Key Messages
-  - [ ] internally created JWK that was exported as a PGP Private Key Messages
+  - [x] internally created JWK that was exported as a PGP Private Key Messages
 
 - Make isomorphic
-  - [ ] replace TextEncoder in UserId`}
+  - [ ] replace TextEncoder in UserId
+  - [ ] use sha.js or sindresorhus/crypto-hash instead of crypto.subtle.digest`}
         </pre>
         <h1>PGP Key Generation and Signing (wip)</h1>
         <button
@@ -146,12 +147,7 @@ Status:
         </button>
         <button
           onClick={async () => {
-            let text = await exportPrivateKey(
-              this.state.keys.publicKey,
-              this.state.keys.privateKey,
-              "CodeSandbox <test@example.com>",
-              1540996719
-            );
+            let text = await exportPrivateKey(this.state.keys.privateKey, "CodeSandbox <test@example.com>", 1540996719);
             this.setState({ ...this.state, input: text });
             console.log(text);
           }}
