@@ -48,8 +48,8 @@ class App extends React.Component {
         <pre>
           {`Next steps:
 - [ ] Export JWK as private key message
-- [ ] Parse PGP private key messages
-- [ ] Create type 0 (sig of binary document) Signature Packet messages
+- [ ] Create type 0 (sig of binary document) Signature Packets
+- [ ] Verify type 0 (sig of binary document) Signature Packets
 
 Status:
 
@@ -59,10 +59,16 @@ Status:
 - Public Key message
   - [x] parse
   - [x] serialize
-  - [x] export JWK as PGP Public Key Messages
-  - [x] Can verify the self-signatures of
-    - [x] internally created JWK that was exported as a PGP Public Key Messages
-    - [x] externally created PGP Public Key Messages
+  - [x] export JWK as PGP Public Key Message
+- Private Key message
+  - [x] parse
+  - [x] serialize
+  - [ ] export JWK as PGP Private Key Message
+- Can verify the self-signatures of
+  - [x] externally created PGP Public Key Messages
+  - [x] externally created PGP Private Key Messages
+  - [x] internally created JWK that was exported as a PGP Public Key Messages
+  - [ ] internally created JWK that was exported as a PGP Private Key Messages
 
 - Make isomorphic
   - [ ] replace TextEncoder in UserId`}
