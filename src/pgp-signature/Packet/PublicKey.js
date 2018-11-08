@@ -48,10 +48,7 @@ export function serialize(packet) {
 
 export function serializeForHash(packet) {
   let buffer = serialize(packet);
-  let buffers = [
-    new Uint8Array([0x99, (buffer.length >> 8) & 255, buffer.length & 255]),
-    buffer
-  ];
+  let buffers = [new Uint8Array([0x99, (buffer.length >> 8) & 255, buffer.length & 255]), buffer];
   return concatenate(buffers);
 }
 

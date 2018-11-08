@@ -3,6 +3,7 @@ import { bits } from "./bits.js";
 import { PacketTag, OldPacketLengthType } from "./constants.js";
 import * as SignaturePacket from "./Packet/Signature.js";
 import * as PublicKeyPacket from "./Packet/PublicKey.js";
+import * as SecretKeyPacket from "./Packet/SecretKey.js";
 import * as UserIdPacket from "./Packet/UserId.js";
 
 export function parse(a, packet) {
@@ -40,6 +41,10 @@ export function parse(a, packet) {
     switch (packet.tag) {
       case 2: {
         return SignaturePacket.parse(_data);
+      }
+      case 5:
+      case 7: {
+        return SecretKeyPacket.parse(_data);
       }
       case 6:
       case 14: {
@@ -97,6 +102,10 @@ export function serialize(packet) {
     case 2: {
       data.set(SignaturePacket.serialize(packet.packet), i);
       break;
+    }
+    case 5:
+    case 7: {
+      data.set(SecretKeyPacket.serialize(packet.packet), i);
     }
     case 6:
     case 14: {

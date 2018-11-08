@@ -1,12 +1,14 @@
 import * as Message from "../pgp-signature/Message.js";
 import * as UrlSafeBase64 from "../pgp-signature/UrlSafeBase64.js";
 
-export async function sign(nativePrivateKey, text2sign, timestamp) {
-  let signature = await crypto.subtle.sign(
-    "RSASSA-PKCS1-v1_5",
-    nativePrivateKey,
-    text2sign
-  );
+// TODO: WORK IN PROGRESS
+export async function sign(openpgpPrivateKey, payload, timestamp) {
+  let parsed = Message.parse(openpgpPrivateKey);
+  let privateKeyPacket = parsed.packets[0].packet;
+  let userIdPacket = parsed.packets[1].packet;
+  let selfSignaturePacket = parsed.packets[2].packet;
+
+  let signature = await crypto.subtle.sign("RSASSA-PKCS1-v1_5", nativePrivateKey, text2sign);
   console.log(signature);
   // Oh the irony.
   signature = UrlSafeBase64.parse(new Uint8Array(signature));
