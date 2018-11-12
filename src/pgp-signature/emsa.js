@@ -60,19 +60,10 @@ const EMSA_PKCS1_v1_5_HASH_PREFIX = {
 
 // EMSA = Encoding Method for Signature with Appendix
 export function encode(hashType, hash, length) {
-  console.log(hashType, hash, length);
   const T = EMSA_PKCS1_v1_5_HASH_PREFIX[hashType];
   const tLen = T.length + hash.length;
-  console.log("tLen", tLen);
   const paddingLength = length - tLen - 3;
   const padding = new Uint8Array(paddingLength);
-  console.log("padding", padding);
   padding.fill(255);
-  return concatenate([
-    new Uint8Array([0, 1]),
-    padding,
-    new Uint8Array([0]),
-    T,
-    hash
-  ]);
+  return concatenate([new Uint8Array([0, 1]), padding, new Uint8Array([0]), T, hash]);
 }

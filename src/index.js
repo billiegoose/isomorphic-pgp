@@ -48,7 +48,6 @@ class App extends React.Component {
       <div className="App">
         <pre>
           {`Next steps:
-- [ ] Create type 0 (sig of binary document) Signature Packets
 - [ ] Verify type 0 (sig of binary document) Signature Packets
 
 Status:
@@ -69,100 +68,113 @@ Status:
   - [x] externally created PGP Private Key Messages
   - [x] internally created JWK that was exported as a PGP Public Key Messages
   - [x] internally created JWK that was exported as a PGP Private Key Messages
+- Type 0 (sig of binary document) Signature Packets
+  - [ ] signed with (externally created PGP Private Key Message) and then verified with GPG
+  - [x] signed with (internally created JWK that was exported as a PGP Private Key Message) and then verified with GPG
 
 - Make isomorphic
   - [ ] replace TextEncoder in UserId
   - [ ] use sha.js or sindresorhus/crypto-hash instead of crypto.subtle.digest`}
         </pre>
         <h1>PGP Key Generation and Signing (wip)</h1>
-        <button
-          onClick={async () => {
-            let keys = await createPair();
-            this.setState({ ...this.state, keys });
-            console.log(keys);
-          }}
-        >
-          createPair
-        </button>
-        <button
-          onClick={async () => {
-            this.setState({
-              ...this.state,
-              input: publicKey,
-              output: JSON.stringify(Message.parse(publicKey), null, 2)
-            });
-          }}
-        >
-          load example PGP Public Key
-        </button>
-        <button
-          onClick={async () => {
-            this.setState({
-              ...this.state,
-              input: secretKey,
-              output: JSON.stringify(Message.parse(secretKey), null, 2)
-            });
-          }}
-        >
-          load example PGP Secret Key
-        </button>
-        <button
-          onClick={async () => {
-            let keys = await examplePair();
-            this.setState({ ...this.state, keys });
-            console.log(keys);
-          }}
-        >
-          load example JWK
-        </button>
-        <button
-          onClick={async () => {
-            let validity = await verifySelfSignature(this.state.input);
-            console.log("validity", validity);
-          }}
-        >
-          verify selfsig
-        </button>
-        <button
-          onClick={async () => {
-            let id = await computeKeyId(this.state.input);
-            console.log(id);
-          }}
-        >
-          keyid
-        </button>
-        <button
-          onClick={async () => {
-            let text = await exportPublicKey(
-              this.state.keys.publicKey,
-              this.state.keys.privateKey,
-              "CodeSandbox <test@example.com>",
-              1540996719
-            );
-            this.setState({ ...this.state, input: text });
-            console.log(text);
-          }}
-        >
-          exportPublicKey
-        </button>
-        <button
-          onClick={async () => {
-            let text = await exportPrivateKey(this.state.keys.privateKey, "CodeSandbox <test@example.com>", 1540996719);
-            this.setState({ ...this.state, input: text });
-            console.log(text);
-          }}
-        >
-          exportPrivateKey
-        </button>
-        <button
-          onClick={async () => {
-            let text = await sign(this.state.keys.privateKey, new TextEncoder().encode("Hello World!"), 1541017302);
-            this.setState({ ...this.state, input: text });
-            console.log(text);
-          }}
-        >
-          Sign
-        </button>
+        <div>
+          Load example:
+          <button
+            onClick={async () => {
+              this.setState({
+                ...this.state,
+                input: publicKey,
+                output: JSON.stringify(Message.parse(publicKey), null, 2)
+              });
+            }}
+          >
+            PGP Public Key
+          </button>
+          <button
+            onClick={async () => {
+              this.setState({
+                ...this.state,
+                input: secretKey,
+                output: JSON.stringify(Message.parse(secretKey), null, 2)
+              });
+            }}
+          >
+            PGP Secret Key
+          </button>
+          <button
+            onClick={async () => {
+              let keys = await examplePair();
+              this.setState({ ...this.state, keys });
+              console.log(keys);
+            }}
+          >
+            JWK
+          </button>
+          <button
+            onClick={async () => {
+              let keys = await createPair();
+              this.setState({ ...this.state, keys });
+              console.log(keys);
+            }}
+          >
+            createPair
+          </button>
+        </div>
+        <div>
+          Do action:
+          <button
+            onClick={async () => {
+              let validity = await verifySelfSignature(this.state.input);
+              console.log("validity", validity);
+            }}
+          >
+            verify selfsig
+          </button>
+          <button
+            onClick={async () => {
+              let id = await computeKeyId(this.state.input);
+              console.log(id);
+            }}
+          >
+            keyid
+          </button>
+          <button
+            onClick={async () => {
+              let text = await exportPublicKey(
+                this.state.keys.publicKey,
+                this.state.keys.privateKey,
+                "CodeSandbox <test@example.com>",
+                1540996719
+              );
+              this.setState({ ...this.state, input: text });
+              console.log(text);
+            }}
+          >
+            exportPublicKey
+          </button>
+          <button
+            onClick={async () => {
+              let text = await exportPrivateKey(
+                this.state.keys.privateKey,
+                "CodeSandbox <test@example.com>",
+                1540996719
+              );
+              this.setState({ ...this.state, input: text });
+              console.log(text);
+            }}
+          >
+            exportPrivateKey
+          </button>
+          <button
+            onClick={async () => {
+              let text = await sign(this.state.input, payload, 1541017302);
+              this.setState({ ...this.state, input: text });
+              console.log(text);
+            }}
+          >
+            Sign
+          </button>
+        </div>
         <h1>PGP Key Parser</h1>
         <textarea
           cols="70"
