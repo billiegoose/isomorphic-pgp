@@ -9,7 +9,6 @@ export function parse(str) {
   matches = str.match(/\r?\n\r?\n([\S\s]*)\r?\n=/);
   if (matches === null) throw new Error("Unable to find main body of OpenPGP ASCII Armor");
   let text = matches[1].replace(/\r/g, "").replace(/\n/g, "");
-  console.log(`"${text}"`, text.length);
   let data = base64.toByteArray(text);
   return { type, data };
 }

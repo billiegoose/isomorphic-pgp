@@ -12,6 +12,7 @@
     "clz-buffer": "1.0.0",
     "concat-buffers": "1.0.0",
     "crc": "3.8.0",
+    "crypto-hash": "1.0.0",
     "define-lazy-prop": "1.0.0",
     "jsbn": "1.1.0",
     "react": "16.5.2",

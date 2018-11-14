@@ -1,6 +1,6 @@
 // import BN from "bn.js";
 import { BigInteger } from "jsbn";
-import * as BigBuf from "./BigBuf.js";
+import { sha1 } from "crypto-hash";
 import * as UrlSafeBase64 from "../pgp-signature/UrlSafeBase64.js";
 import * as Message from "../pgp-signature/Message.js";
 import * as MPI from "../pgp-signature/MPI.js";
@@ -8,6 +8,7 @@ import * as PublicKey from "../pgp-signature/Packet/PublicKey.js";
 import { calcKeyId } from "./calcKeyId.js";
 import { certificationSignatureHashData } from "../pgp-signature/certificationSignatureHashData.js";
 import * as EMSA from "../pgp-signature/emsa.js";
+import { trimZeros } from "../pgp-signature/trimZeros.js";
 import arrayBufferToHex from "array-buffer-to-hex";
 
 export async function exportPublicKey(nativePublicKey, nativePrivateKey, author, timestamp) {
@@ -60,7 +61,7 @@ export async function exportPublicKey(nativePublicKey, nativePrivateKey, author,
 
   let buffer = await certificationSignatureHashData(publicKeyPacket, userIdPacket, partialSignaturePacket);
   console.log("hash this!", buffer);
-  let hash = await crypto.subtle.digest("SHA-1", buffer);
+  let hash = await sha1(buffer, { outputFormat: "buffer" });
   hash = new Uint8Array(hash);
   console.log("hash", new Uint8Array(hash));
   console.log("hash", arrayBufferToHex(new Uint8Array(hash))); // ef0a51219d056749a63fda970f5a504e451de039
@@ -115,7 +116,8 @@ export async function exportPublicKey(nativePublicKey, nativePrivateKey, author,
   let S = M1.add(H.multiply(P));
   console.timeEnd("CRT");
 
-  let signature = new Uint8Array(S.toByteArray().slice(1));
+  let signature = new Uint8Array(S.toByteArray());
+  signature = trimZeros(signature);
   console.log("_signature", signature);
   console.timeEnd("jsbn");
 

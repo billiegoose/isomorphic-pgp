@@ -1,11 +1,13 @@
 // import BN from "bn.js";
 import { BigInteger } from "jsbn";
+import { sha1 } from "crypto-hash";
 import * as UrlSafeBase64 from "../pgp-signature/UrlSafeBase64.js";
 import * as Message from "../pgp-signature/Message.js";
 import * as SecretKey from "../pgp-signature/Packet/SecretKey.js";
 import { calcKeyId } from "./calcKeyId.js";
 import { certificationSignatureHashData } from "../pgp-signature/certificationSignatureHashData.js";
 import * as EMSA from "../pgp-signature/emsa.js";
+import { trimZeros } from "../pgp-signature/trimZeros.js";
 import arrayBufferToHex from "array-buffer-to-hex";
 
 // TODO: WORK IN PROGRESS
@@ -15,15 +17,15 @@ export async function exportPrivateKey(nativePrivateKey, author, timestamp) {
 
   console.log(jwk);
   let e = UrlSafeBase64.serialize(jwk.e);
-  console.log("e", e);
+  console.log("e.byteLength", e.byteLength);
   let n = UrlSafeBase64.serialize(jwk.n);
-  console.log("n", n);
+  console.log("n.byteLength", n.byteLength);
   let d = UrlSafeBase64.serialize(jwk.d);
-  console.log("d", d);
+  console.log("d.byteLength", d.byteLength);
   let p = UrlSafeBase64.serialize(jwk.p);
-  console.log("p", p);
+  console.log("p.byteLength", p.byteLength);
   let q = UrlSafeBase64.serialize(jwk.q);
-  console.log("q", q);
+  console.log("q.byteLength", q.byteLength);
 
   let secretKeyPacket = SecretKey.fromJWK(jwk, { creation: timestamp });
 
@@ -73,7 +75,7 @@ export async function exportPrivateKey(nativePrivateKey, author, timestamp) {
 
   let buffer = await certificationSignatureHashData(secretKeyPacket, userIdPacket, partialSignaturePacket);
   console.log("hash this!", buffer);
-  let hash = await crypto.subtle.digest("SHA-1", buffer);
+  let hash = await sha1(buffer, { outputFormat: "buffer" });
   hash = new Uint8Array(hash);
   console.log("hash", new Uint8Array(hash));
   console.log("hash", arrayBufferToHex(new Uint8Array(hash))); // ef0a51219d056749a63fda970f5a504e451de039
@@ -131,7 +133,8 @@ export async function exportPrivateKey(nativePrivateKey, author, timestamp) {
   let S = M1.add(H.multiply(P));
   console.timeEnd("CRT");
 
-  let signature = new Uint8Array(S.toByteArray().slice(1));
+  let signature = new Uint8Array(S.toByteArray());
+  signature = trimZeros(signature);
   console.log("_signature2", signature);
 
   let signatureLength = signature.byteLength;

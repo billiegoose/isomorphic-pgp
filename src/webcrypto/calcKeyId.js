@@ -1,10 +1,11 @@
+import { sha1 } from "crypto-hash";
 import arrayBufferToHex from "array-buffer-to-hex";
 import * as Message from "../pgp-signature/Message.js";
 import * as PublicKey from "../pgp-signature/Packet/PublicKey.js";
 
 export async function calcKeyId(packet) {
   let buffer = await PublicKey.serializeForHash(packet);
-  let hash = await crypto.subtle.digest("SHA-1", buffer);
+  let hash = await sha1(buffer, { outputFormat: "buffer" });
   hash = new Uint8Array(hash);
   let fingerprint = hash;
   let keyid = hash.slice(12);

@@ -3,6 +3,9 @@ import * as Message from "../pgp-signature/Message.js";
 import * as UrlSafeBase64 from "../pgp-signature/UrlSafeBase64.js";
 import { payloadSignatureHashData } from "../pgp-signature/payloadSignatureHashData.js";
 import * as EMSA from "../pgp-signature/emsa.js";
+import { sha1 } from "crypto-hash";
+import { trimZeros } from "../pgp-signature/trimZeros.js";
+import { encode } from "../isomorphic-textencoder";
 
 import arrayBufferToHex from "array-buffer-to-hex";
 
@@ -14,7 +17,6 @@ export async function sign(openpgpPrivateKey, payload, timestamp) {
 
   // TODO: Assert that this is all correct and stuff.
   let selfSignaturePacket = parsed.packets[2].packet;
-  console.log("selfSignaturePacket", selfSignaturePacket);
   let keyid = selfSignaturePacket.unhashed.subpackets.find(subpacket => subpacket.type === 16).subpacket.issuer;
   console.log("keyid", arrayBufferToHex(UrlSafeBase64.serialize(keyid)));
 
@@ -61,10 +63,9 @@ export async function sign(openpgpPrivateKey, payload, timestamp) {
     }
   };
 
-  let enc = new TextEncoder();
-  payload = typeof payload === "string" ? enc.encode(payload) : payload;
+  payload = typeof payload === "string" ? encode(payload) : payload;
   let buffer = await payloadSignatureHashData(payload, partialSignaturePacket);
-  let hash = await crypto.subtle.digest("SHA-1", buffer);
+  let hash = await sha1(buffer, { outputFormat: "buffer" });
   hash = new Uint8Array(hash);
   console.log("hash", arrayBufferToHex(hash));
   let left16 = (hash[0] << 8) + hash[1];
@@ -97,7 +98,8 @@ export async function sign(openpgpPrivateKey, payload, timestamp) {
   let S = M1.add(H.multiply(P));
   console.timeEnd("CRT");
 
-  let signature = new Uint8Array(S.toByteArray().slice(1));
+  let signature = new Uint8Array(S.toByteArray());
+  signature = trimZeros(signature);
   console.log("signature", signature);
 
   let signatureLength = signature.byteLength;

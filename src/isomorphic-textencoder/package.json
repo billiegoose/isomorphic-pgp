@@ -1,0 +1,5 @@
+{
+  "name": "isomorphic-textencoder",
+  "main": "main.js",
+  "browser": "browser.js"
+}

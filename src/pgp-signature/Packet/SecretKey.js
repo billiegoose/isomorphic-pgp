@@ -44,11 +44,9 @@ export function parse(b) {
     }
   }
   let _checksum = _remainder.b.slice(_remainder.i);
-  console.log("expected checksum", _checksum);
-  console.log("computed checksum", checksum);
   if (_checksum.length !== 2) throw new Error("Checksum length error");
   if (checksum[0] !== _checksum[0] || checksum[1] !== _checksum[1]) {
-    throw new Error("Checksum value error");
+    throw new Error("SecretKey.js: Checksum value error");
   }
   return packet;
 }
