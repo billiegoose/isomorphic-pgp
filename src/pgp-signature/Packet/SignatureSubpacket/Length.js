@@ -1,3 +1,5 @@
+import * as Uint32 from "../../Uint32.js";
+
 export function parse(a) {
   let byte1 = a.b[a.i++];
   if (byte1 < 192) {
@@ -6,9 +8,7 @@ export function parse(a) {
     let byte2 = a.b[a.i++];
     return ((byte1 - 192) << 8) + (byte2 + 192);
   } else {
-    return (
-      (a.b[a.i++] << 24) + (a.b[a.i++] << 16) + (a.b[a.i++] << 8) + a.b[a.i++]
-    );
+    return Uint32.parse([a.b[a.i++], a.b[a.i++], a.b[a.i++], a.b[a.i++]]);
   }
 }
 
@@ -20,12 +20,6 @@ export function serialize(length) {
     let octet1 = ((length >> 8) + 192) & 255;
     return new Uint8Array([octet1, octet2]);
   } else {
-    return new Uint8Array([
-      255,
-      (length >> 24) & 255,
-      (length >> 16) & 255,
-      (length >> 8) & 255,
-      length & 255
-    ]);
+    return new Uint8Array([255, ...Uint32.serialize(length)]);
   }
 }

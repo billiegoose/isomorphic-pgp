@@ -1,45 +1,37 @@
-import defineLazyProp from "define-lazy-prop";
 import concatenate from "concat-buffers";
 import * as MPI from "../MPI.js";
+import * as Uint32 from "../Uint32.js";
+import * as Uint16 from "../Uint16.js";
 import { PublicKeyAlgorithm } from "../constants.js";
+import { select } from "../select.js";
 
 export function parse(b) {
-  let i = 0;
-  let packet = {};
-  packet.version = b[i++];
-  packet.creation = (b[i++] << 24) + (b[i++] << 16) + (b[i++] << 8) + b[i++];
-  packet.alg = b[i++];
-  packet.alg_s = PublicKeyAlgorithm[packet.alg];
-  let _remainder = { b: b.slice(i), i: 0 };
-  defineLazyProp(packet, "mpi", () => {
-    let mpi = {};
-    switch (packet.alg) {
-      case 1: {
-        return {
-          n: MPI.parse(_remainder),
-          e: MPI.parse(_remainder)
-        };
-      }
-    }
+  let [version, c1, c2, c3, c4, alg] = b;
+  let creation = Uint32.parse([c1, c2, c3, c4]);
+  let packet = {
+    version,
+    creation,
+    alg,
+    alg_s: PublicKeyAlgorithm[alg]
+  };
+  let _remainder = { b: b.slice(6), i: 0 };
+  packet.mpi = select(packet.alg, {
+    1: () => ({
+      n: MPI.parse(_remainder),
+      e: MPI.parse(_remainder)
+    })
   });
   return packet;
 }
 
 export function serialize(packet) {
-  let i = 0;
-  let b = new Uint8Array(6);
-  b[i++] = packet.version;
-  b[i++] = (packet.creation >> 24) & 255;
-  b[i++] = (packet.creation >> 16) & 255;
-  b[i++] = (packet.creation >> 8) & 255;
-  b[i++] = packet.creation & 255;
-  b[i++] = packet.alg;
+  let { version, creation, alg, mpi } = packet;
+  let b = new Uint8Array([version, ...Uint32.serialize(creation), alg]);
 
-  let buffers = [b];
-  switch (packet.alg) {
+  let buffers;
+  switch (alg) {
     case 1: {
-      buffers.push(MPI.serialize(packet.mpi.n));
-      buffers.push(MPI.serialize(packet.mpi.e));
+      buffers = [b, MPI.serialize(mpi.n), MPI.serialize(mpi.e)];
       break;
     }
   }
@@ -48,33 +40,44 @@ export function serialize(packet) {
 
 export function serializeForHash(packet) {
   let buffer = serialize(packet);
-  let buffers = [new Uint8Array([0x99, (buffer.length >> 8) & 255, buffer.length & 255]), buffer];
+  let buffers = [new Uint8Array([0x99, ...Uint16.serialize(buffer.length)]), buffer];
   return concatenate(buffers);
 }
 
 export function fromJWK(jwk, { creation }) {
-  let packet = {};
-  packet.version = 4;
-  packet.creation = creation;
-  if (jwk.kty === "RSA") {
-    packet.alg = 1;
-    packet.alg_s = PublicKeyAlgorithm[packet.alg];
-    packet.mpi = {};
-    packet.mpi.n = jwk.n;
-    packet.mpi.e = jwk.e;
-  }
-  return packet;
+  return {
+    version: 4,
+    creation,
+    ...select(jwk.kty, {
+      RSA: () => ({
+        alg: 1,
+        alg_s: PublicKeyAlgorithm[1],
+        mpi: {
+          n: jwk.n,
+          e: jwk.e
+        }
+      }),
+      default: () => ({})
+    })
+  };
 }
 
 export function toJWK(packet) {
-  const jwk = {};
-  if (packet.alg === 1) {
-    jwk.kty = "RSA";
-    jwk.alg = "RS1";
-    jwk.e = packet.mpi.e;
-    jwk.n = packet.mpi.n;
-  }
-  jwk.key_ops = ["verify"];
-  jwk.ext = true;
-  return jwk;
+  let {
+    alg,
+    mpi: { e, n }
+  } = packet;
+  return {
+    key_ops: ["verify"],
+    ext: true,
+    ...select(alg, {
+      1: () => ({
+        kty: "RSA",
+        alg: "RS1",
+        e,
+        n
+      }),
+      default: () => ({})
+    })
+  };
 }

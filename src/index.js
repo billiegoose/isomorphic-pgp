@@ -9,6 +9,7 @@ import { verify } from "./webcrypto/verify.js";
 import { examplePair } from "./webcrypto/examplePair.js";
 import { calcKeyId, computeKeyId } from "./webcrypto/calcKeyId.js";
 import { verifySelfSignature } from "./webcrypto/verifySelfSignature.js";
+import { convertPrivateToPublic } from "./webcrypto/convertPrivateToPublic.js";
 
 import "./styles.css";
 
@@ -54,6 +55,7 @@ class App extends React.Component {
       <div className="App">
         <pre>
           {`Next steps:
+- [ ] Derive lengths when serializing?
 - [ ] Convert PGP Private Key to a Public Public Key
 
 Status:
@@ -149,6 +151,15 @@ Status:
           </button>
           <button
             onClick={async () => {
+              let text = await convertPrivateToPublic(this.state.input);
+              this.setState({ ...this.state, input: text, publicKey: text });
+              console.log(text);
+            }}
+          >
+            toPublic
+          </button>
+          <button
+            onClick={async () => {
               let text = await exportPublicKey(
                 this.state.keys.publicKey,
                 this.state.keys.privateKey,
@@ -185,7 +196,7 @@ Status:
           </button>
           <button
             onClick={async () => {
-              let valid = await verify(this.state.publicKey, this.state.input, payload);
+              let valid = await verify(this.state.secretKey, this.state.input, payload);
               console.log("valid", valid);
             }}
           >
@@ -212,7 +223,6 @@ Status:
           name="input"
           initialExpandedPaths={["root", "root.*", "root.*.*", "root.*.*.*"]}
         />
-        {JSON.stringify(Message.parse(this.state.input))}
         <h1>PGP Key Serializer</h1>
         <textarea
           cols="70"

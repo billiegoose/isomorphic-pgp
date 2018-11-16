@@ -1,5 +1,6 @@
 import concatenate from "concat-buffers";
 import { encode, decode } from "../../isomorphic-textencoder";
+import * as Uint32 from "../Uint32.js";
 
 export function parse(buffer) {
   return {
@@ -13,15 +14,5 @@ export function serialize(packet) {
 
 export function serializeForHash(packet) {
   let buffer = serialize(packet);
-  let buffers = [
-    new Uint8Array([
-      0xb4,
-      (buffer.length >> 24) & 255,
-      (buffer.length >> 16) & 255,
-      (buffer.length >> 8) & 255,
-      buffer.length & 255
-    ]),
-    buffer
-  ];
-  return concatenate(buffers);
+  return concatenate([new Uint8Array([0xb4, ...Uint32.serialize(buffer.length)]), buffer]);
 }
