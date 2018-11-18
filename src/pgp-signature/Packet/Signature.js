@@ -51,12 +51,16 @@ export function serialize(packet) {
     hashed: { length: hashedLength },
     unhashed: { length: unhashedLength }
   } = packet;
-  let part1 = new Uint8Array([version, type, alg, hash, ...Uint16.serialize(hashedLength)]);
-  let part2 = SubpacketArray.serialize(packet.hashed.subpackets);
-  let part3 = new Uint8Array(Uint16.serialize(unhashedLength));
-  let part4 = SubpacketArray.serialize(packet.unhashed.subpackets);
-  let part5 = new Uint8Array(Uint16.serialize(left16));
-  let buffers = [part1, part2, part3, part4, part5];
+  let part1 = new Uint8Array([version, type, alg, hash]);
+
+  let part3 = SubpacketArray.serialize(packet.hashed.subpackets);
+  let part2 = new Uint8Array(Uint16.serialize(part3.length));
+
+  let part5 = SubpacketArray.serialize(packet.unhashed.subpackets);
+  let part4 = new Uint8Array(Uint16.serialize(part5.length));
+
+  let part6 = new Uint8Array(Uint16.serialize(left16));
+  let buffers = [part1, part2, part3, part4, part5, part6];
   switch (packet.alg) {
     case 1: {
       buffers.push(MPI.serialize(packet.mpi.signature));
@@ -67,16 +71,11 @@ export function serialize(packet) {
 
 // 5.2.4.  Computing Signatures
 export function serializeForHashTrailer(packet) {
-  let {
-    version,
-    type,
-    alg,
-    hash,
-    hashed: { length: hashedLength }
-  } = packet;
-  let part1 = new Uint8Array([version, type, alg, hash, ...Uint16.serialize(hashedLength)]);
+  let { version, type, alg, hash } = packet;
   let part2 = SubpacketArray.serialize(packet.hashed.subpackets);
-  let length = part1.length + hashedLength;
+  let hashedLength = part2.length;
+  let part1 = new Uint8Array([version, type, alg, hash, ...Uint16.serialize(hashedLength)]);
+  let length = part1.length + part2.length;
   let part3 = new Uint8Array([
     4, // version 4
     255, // fixed number

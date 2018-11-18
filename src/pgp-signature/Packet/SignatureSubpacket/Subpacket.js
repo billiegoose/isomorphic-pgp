@@ -24,12 +24,12 @@ export function parse(a) {
 }
 
 export function serialize(subpacket) {
-  let length = Length.serialize(subpacket.length);
   let content = select(subpacket.type, {
     2: () => CreationTime.serialize(subpacket.subpacket),
     16: () => Issuer.serialize(subpacket.subpacket),
     27: () => KeyFlags.serialize(subpacket.subpacket),
     default: () => UrlSafeBase64.serialize(subpacket.subpacket.data)
   });
+  let length = Length.serialize(content.length + 1);
   return concatenate([length, new Uint8Array([subpacket.type]), content]);
 }

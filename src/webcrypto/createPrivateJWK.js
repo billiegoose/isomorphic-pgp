@@ -1,4 +1,4 @@
-export async function createPair() {
+export async function createPrivateJWK() {
   let keys = await crypto.subtle.generateKey(
     {
       name: "RSASSA-PKCS1-v1_5",
@@ -10,9 +10,5 @@ export async function createPair() {
     ["sign", "verify"]
   );
   let jwk = await crypto.subtle.exportKey("jwk", keys.privateKey);
-  console.log("privateKeyJWK", jwk);
-  // TODO: consider whether it's worth always exporting to jwk
-  // and converting jwk to native inside functions.
-  // Would ensure a pure JSON API that works well over postMessage.
-  return keys;
+  return jwk;
 }

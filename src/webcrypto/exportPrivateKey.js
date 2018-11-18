@@ -8,11 +8,12 @@ import { calcKeyId } from "./calcKeyId.js";
 import { certificationSignatureHashData } from "../pgp-signature/certificationSignatureHashData.js";
 import * as EMSA from "../pgp-signature/emsa.js";
 import { trimZeros } from "../pgp-signature/trimZeros.js";
+import { roundPowerOfTwo } from "../pgp-signature/roundPowerOfTwo.js";
 import arrayBufferToHex from "array-buffer-to-hex";
+import * as Uint16 from "../pgp-signature/Uint16.js";
 
 // TODO: WORK IN PROGRESS
-export async function exportPrivateKey(nativePrivateKey, author, timestamp) {
-  let jwk = await crypto.subtle.exportKey("jwk", nativePrivateKey);
+export async function exportPrivateKey(jwk, author, timestamp) {
   if (jwk.kty !== "RSA" || jwk.alg !== "RS1") throw new Error("Only RSA keys supported at this time");
 
   console.log(jwk);
@@ -44,26 +45,18 @@ export async function exportPrivateKey(nativePrivateKey, author, timestamp) {
 
   let partialSignaturePacket = {
     version: 4,
-    // type: 16,
-    // type_s: "Generic certification of a User ID and Public-Key packet",
     type: 19,
-    type_s: "Positive certification of a User ID and Public-Key packet",
     alg: 1,
-    alg_s: "RSA (Encrypt or Sign)",
     hash: 2,
-    hash_s: "SHA1",
     hashed: {
-      length: 6 + 3,
       subpackets: [
         {
-          length: 5,
           type: 2,
           subpacket: {
             creation: timestamp
           }
         },
         {
-          length: 2,
           type: 27,
           subpacket: {
             flags: 3
@@ -80,34 +73,23 @@ export async function exportPrivateKey(nativePrivateKey, author, timestamp) {
   console.log("hash", new Uint8Array(hash));
   console.log("hash", arrayBufferToHex(new Uint8Array(hash))); // ef0a51219d056749a63fda970f5a504e451de039
 
-  let left16 = (hash[0] << 8) + hash[1];
+  let left16 = Uint16.parse([hash[0], hash[1]]);
   console.log("left16", left16);
+
+  // We need the modulus length in bytes
+  let modulusLength = roundPowerOfTwo(n.byteLength);
+  console.log("modulusLength", modulusLength);
 
   // TODO: Wrap `hash` in the dumbass EMSA-PKCS1-v1_5 padded message format:
   // https://github.com/openpgpjs/openpgpjs/blob/a35b4d28e0215c3a6654a4401c4e7e085b55e220/src/crypto/pkcs1.js
-  hash = EMSA.encode("SHA1", hash, nativePrivateKey.algorithm.modulusLength / 8);
+  hash = EMSA.encode("SHA1", hash, modulusLength);
 
   // SIGN
-  // let signature =
-  let _jwk = await crypto.subtle.exportKey("jwk", nativePrivateKey);
-  console.log("nativePrivateKey", _jwk);
+  console.log("nativePrivateKey", jwk);
 
-  // console.time("bn.js"); // 1339ms
-  // let M = new BN(hash);
-  // let N = new BN(UrlSafeBase64.serialize(_jwk.n));
-  // // let E = new BN(UrlSafeBase64.serialize(_jwk.e));
-  // let D = new BN(UrlSafeBase64.serialize(_jwk.d));
-
-  // // Lifted from https://github.com/openpgpjs/openpgpjs/blob/master/src/crypto/public_key/rsa.js
-  // const nred = new BN.red(N);
-  // let S = M.toRed(nred).redPow(D);
-  // let signature = S.toArrayLike(Uint8Array);
-  // console.log("signature", signature);
-  // console.timeEnd("bn.js");
-
-  let N = new BigInteger(arrayBufferToHex(UrlSafeBase64.serialize(_jwk.n)), 16);
-  // let E = new BN(UrlSafeBase64.serialize(_jwk.e));
-  let D = new BigInteger(arrayBufferToHex(UrlSafeBase64.serialize(_jwk.d)), 16);
+  let N = new BigInteger(arrayBufferToHex(UrlSafeBase64.serialize(jwk.n)), 16);
+  // let E = new BN(UrlSafeBase64.serialize(jwk.e));
+  let D = new BigInteger(arrayBufferToHex(UrlSafeBase64.serialize(jwk.d)), 16);
   let M = new BigInteger(arrayBufferToHex(hash), 16);
 
   // // Straightforward solution: ~ 679ms
@@ -144,10 +126,8 @@ export async function exportPrivateKey(nativePrivateKey, author, timestamp) {
 
   let completeSignaturePacket = Object.assign({}, partialSignaturePacket, {
     unhashed: {
-      length: 10,
       subpackets: [
         {
-          length: 9,
           type: 16,
           subpacket: {
             issuer: UrlSafeBase64.parse(keyid)
@@ -168,30 +148,17 @@ export async function exportPrivateKey(nativePrivateKey, author, timestamp) {
     packets: [
       {
         type: 0,
-        type_s: "old",
         tag: 5,
-        tag_s: "Secret-Key Packet",
-        length: { type: 1, type_s: "two-octet length", value: 1816 },
         packet: secretKeyPacket
       },
       {
         type: 0,
-        type_s: "old",
         tag: 13,
-        tag_s: "User ID Packet",
-        length: { type: 0, type_s: "one-octet length", value: author.length },
         packet: userIdPacket
       },
       {
         type: 0,
-        type_s: "old",
         tag: 2,
-        tag_s: "Signature Packet",
-        length: {
-          type: 1,
-          type_s: "two-octet length",
-          value: 12 + 6 + 3 + 10 + signatureLength
-        },
         packet: completeSignaturePacket
       }
     ]

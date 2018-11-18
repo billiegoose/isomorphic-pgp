@@ -3,14 +3,16 @@ import concatenate from "concat-buffers";
 
 export function parse(_data) {
   let packets = [];
-  let failsafe = 10;
+  let makingProgress = true;
   let a = {
     b: _data,
     i: 0
   };
-  while (failsafe-- > 0 && a.i < a.b.length - 1) {
+  while (makingProgress && a.i < a.b.length - 1) {
     try {
+      let previ = a.i;
       packets.push(Packet.parse(a));
+      makingProgress = a.i > previ;
     } catch (err) {
       break;
     }

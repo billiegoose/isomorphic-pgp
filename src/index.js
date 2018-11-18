@@ -1,12 +1,12 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import ObjectInspector from "react-object-inspector";
-import { createPair } from "./webcrypto/createPair.js";
+import { createPrivateJWK } from "./webcrypto/createPrivateJWK.js";
 import { exportPublicKey } from "./webcrypto/exportPublicKey.js";
 import { exportPrivateKey } from "./webcrypto/exportPrivateKey.js";
 import { sign } from "./webcrypto/sign.js";
 import { verify } from "./webcrypto/verify.js";
-import { examplePair } from "./webcrypto/examplePair.js";
+import { exampleJWK } from "./webcrypto/exampleJWK.js";
 import { calcKeyId, computeKeyId } from "./webcrypto/calcKeyId.js";
 import { verifySelfSignature } from "./webcrypto/verifySelfSignature.js";
 import { convertPrivateToPublic } from "./webcrypto/convertPrivateToPublic.js";
@@ -55,8 +55,8 @@ class App extends React.Component {
       <div className="App">
         <pre>
           {`Next steps:
-- [ ] Derive lengths when serializing?
-- [ ] Convert PGP Private Key to a Public Public Key
+- [ ] test test and validate
+- [ ] finish cleaning up code and put on npm
 
 Status:
 
@@ -71,6 +71,7 @@ Status:
   - [x] parse
   - [x] serialize
   - [x] export JWK as PGP Private Key Message (that can be imported by GPG)
+  - [x] Convert PGP Private Key to a Public Public Key
 - Can verify the self-signatures of
   - [x] externally created PGP Public Key Messages
   - [x] externally created PGP Private Key Messages
@@ -114,8 +115,8 @@ Status:
           </button>
           <button
             onClick={async () => {
-              let keys = await examplePair();
-              this.setState({ ...this.state, keys });
+              let keys = await exampleJWK();
+              this.setState({ ...this.state, ...keys });
               console.log(keys);
             }}
           >
@@ -123,12 +124,12 @@ Status:
           </button>
           <button
             onClick={async () => {
-              let keys = await createPair();
-              this.setState({ ...this.state, keys });
-              console.log(keys);
+              let privateJWK = await createPrivateJWK();
+              this.setState({ ...this.state, privateJWK });
+              console.log(privateJWK);
             }}
           >
-            createPair
+            createPrivateJWK
           </button>
         </div>
         <div>
@@ -161,8 +162,8 @@ Status:
           <button
             onClick={async () => {
               let text = await exportPublicKey(
-                this.state.keys.publicKey,
-                this.state.keys.privateKey,
+                this.state.publicJWK,
+                this.state.privateJWK,
                 "CodeSandbox <test@example.com>",
                 keyCreationTimestamp
               );
@@ -175,7 +176,7 @@ Status:
           <button
             onClick={async () => {
               let text = await exportPrivateKey(
-                this.state.keys.privateKey,
+                this.state.privateJWK,
                 "CodeSandbox <test@example.com>",
                 keyCreationTimestamp
               );
@@ -213,7 +214,8 @@ Status:
         </div>
         <h1>PGP Key Parser</h1>
         <textarea
-          cols="70"
+          style={{ fontFamily: "monospace" }}
+          cols="60"
           rows="20"
           value={this.state.input}
           onChange={e => this.setState({ input: e.target.value })}
@@ -225,7 +227,8 @@ Status:
         />
         <h1>PGP Key Serializer</h1>
         <textarea
-          cols="70"
+          style={{ fontFamily: "monospace" }}
+          cols="60"
           rows="20"
           value={this.state.output}
           onChange={e => this.setState({ output: e.target.value })}

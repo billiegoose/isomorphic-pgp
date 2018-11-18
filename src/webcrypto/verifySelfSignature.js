@@ -28,17 +28,6 @@ export async function verifySelfSignature(openpgpPublicKey) {
 
   let signature = UrlSafeBase64.serialize(selfSignaturePacket.mpi.signature);
 
-  // console.time("bn.js"); // 30ms
-  // let S = new BN(signature);
-  // let N = new BN(UrlSafeBase64.serialize(publicKeyPacket.mpi.n));
-  // let E = new BN(UrlSafeBase64.serialize(publicKeyPacket.mpi.e));
-  // const nred = new BN.red(N);
-  // // Lifted from https://github.com/openpgpjs/openpgpjs/blob/master/src/crypto/public_key/rsa.js
-  // const _hash = S.toRed(nred)
-  //   .redPow(E)
-  //   .toArrayLike(Uint8Array, "be", N.byteLength());
-  // console.timeEnd("bn.js");
-
   console.time("jsbn"); // 5ms
   let S = new BigInteger(arrayBufferToHex(signature), 16);
   let N = new BigInteger(arrayBufferToHex(UrlSafeBase64.serialize(publicKeyPacket.mpi.n)), 16);

@@ -6,6 +6,7 @@ import * as EMSA from "../pgp-signature/emsa.js";
 import { sha1 } from "crypto-hash";
 import { trimZeros } from "../pgp-signature/trimZeros.js";
 import { encode } from "../isomorphic-textencoder";
+import * as Uint16 from "../pgp-signature/Uint16.js";
 
 import arrayBufferToHex from "array-buffer-to-hex";
 
@@ -41,19 +42,12 @@ export async function sign(openpgpPrivateKey, payload, timestamp) {
 
   let partialSignaturePacket = {
     version: 4,
-    // type: 16,
-    // type_s: "Generic certification of a User ID and Public-Key packet",
     type: 0,
-    type_s: "Signature of a binary document",
     alg: 1,
-    alg_s: "RSA (Encrypt or Sign)",
     hash: 2,
-    hash_s: "SHA1",
     hashed: {
-      length: 6,
       subpackets: [
         {
-          length: 5,
           type: 2,
           subpacket: {
             creation: timestamp
@@ -68,7 +62,7 @@ export async function sign(openpgpPrivateKey, payload, timestamp) {
   let hash = await sha1(buffer, { outputFormat: "buffer" });
   hash = new Uint8Array(hash);
   console.log("hash", arrayBufferToHex(hash));
-  let left16 = (hash[0] << 8) + hash[1];
+  let left16 = Uint16.parse([hash[0], hash[1]]);
   console.log("left16", left16);
   // Wrap `hash` in the dumbass EMSA-PKCS1-v1_5 padded message format:
   console.log("n.byteLength", n.byteLength);
@@ -110,10 +104,8 @@ export async function sign(openpgpPrivateKey, payload, timestamp) {
 
   let completeSignaturePacket = Object.assign({}, partialSignaturePacket, {
     unhashed: {
-      length: 10,
       subpackets: [
         {
-          length: 9,
           type: 16,
           subpacket: {
             issuer: keyid
@@ -132,14 +124,8 @@ export async function sign(openpgpPrivateKey, payload, timestamp) {
     packets: [
       {
         type: 0,
-        type_s: "old",
         tag: 2,
         tag_s: "Signature Packet",
-        length: {
-          type: 1,
-          type_s: "two-octet length",
-          value: 12 + 6 + 10 + signatureLength
-        },
         packet: completeSignaturePacket
       }
     ]
