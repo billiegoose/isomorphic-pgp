@@ -1,11 +1,12 @@
 import { BigInteger } from "jsbn";
 import { sha1 } from "crypto-hash";
-import * as Message from "../pgp-signature/Message.js";
-import * as PublicKey from "../pgp-signature/Packet/PublicKey.js";
-import * as UrlSafeBase64 from "../pgp-signature/UrlSafeBase64.js";
-import * as EMSA from "../pgp-signature/emsa.js";
-import { certificationSignatureHashData } from "../pgp-signature/certificationSignatureHashData.js";
 import arrayBufferToHex from "array-buffer-to-hex";
+
+import * as Message from "isomorphic-pgp/parser/Message.js";
+import * as PublicKey from "isomorphic-pgp/parser/Packet/PublicKey.js";
+import * as UrlSafeBase64 from "isomorphic-pgp/parser/UrlSafeBase64.js";
+import * as EMSA from "isomorphic-pgp/parser/emsa.js";
+import { certificationSignatureHashData } from "isomorphic-pgp/parser/certificationSignatureHashData.js";
 
 export async function verifySelfSignature(openpgpPublicKey) {
   let parsed = Message.parse(openpgpPublicKey);

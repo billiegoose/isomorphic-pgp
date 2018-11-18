@@ -1,17 +1,19 @@
 // import BN from "bn.js";
 import { BigInteger } from "jsbn";
 import { sha1 } from "crypto-hash";
-import * as UrlSafeBase64 from "../pgp-signature/UrlSafeBase64.js";
-import * as Message from "../pgp-signature/Message.js";
-import * as MPI from "../pgp-signature/MPI.js";
-import * as PublicKey from "../pgp-signature/Packet/PublicKey.js";
-import { calcKeyId } from "./calcKeyId.js";
-import { certificationSignatureHashData } from "../pgp-signature/certificationSignatureHashData.js";
-import * as EMSA from "../pgp-signature/emsa.js";
-import { trimZeros } from "../pgp-signature/trimZeros.js";
-import { roundPowerOfTwo } from "../pgp-signature/roundPowerOfTwo.js";
 import arrayBufferToHex from "array-buffer-to-hex";
-import * as Uint16 from "../pgp-signature/Uint16.js";
+
+import * as UrlSafeBase64 from "isomorphic-pgp/parser/UrlSafeBase64.js";
+import * as Message from "isomorphic-pgp/parser/Message.js";
+import * as MPI from "isomorphic-pgp/parser/MPI.js";
+import * as PublicKey from "isomorphic-pgp/parser/Packet/PublicKey.js";
+import { certificationSignatureHashData } from "isomorphic-pgp/parser/certificationSignatureHashData.js";
+import * as EMSA from "isomorphic-pgp/parser/emsa.js";
+import { trimZeros } from "isomorphic-pgp/parser/trimZeros.js";
+import { roundPowerOfTwo } from "isomorphic-pgp/parser/roundPowerOfTwo.js";
+import * as Uint16 from "isomorphic-pgp/parser/Uint16.js";
+
+import { calcKeyId } from "./calcKeyId.js";
 
 export async function exportPublicKey(jwk, _jwk, author, timestamp) {
   if (jwk.kty !== "RSA" || jwk.alg !== "RS1") throw new Error("Only RSA keys supported at this time");

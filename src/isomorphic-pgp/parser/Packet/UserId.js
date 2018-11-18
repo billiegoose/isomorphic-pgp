@@ -1,5 +1,5 @@
 import concatenate from "concat-buffers";
-import { encode, decode } from "../../isomorphic-textencoder";
+import { encode, decode } from "isomorphic-textencoder";
 import * as Uint32 from "../Uint32.js";
 
 export function parse(buffer) {

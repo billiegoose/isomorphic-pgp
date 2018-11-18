@@ -1,19 +1,24 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import ObjectInspector from "react-object-inspector";
-import { createPrivateJWK } from "./webcrypto/createPrivateJWK.js";
-import { exportPublicKey } from "./webcrypto/exportPublicKey.js";
-import { exportPrivateKey } from "./webcrypto/exportPrivateKey.js";
-import { sign } from "./webcrypto/sign.js";
-import { verify } from "./webcrypto/verify.js";
+
+import { sign } from "isomorphic-pgp/sign-and-verify/sign.js";
+import { verify } from "isomorphic-pgp/sign-and-verify/verify.js";
+import { verifySelfSignature } from "isomorphic-pgp/sign-and-verify/verifySelfSignature.js";
+
+import { calcKeyId, computeKeyId } from "isomorphic-pgp/util/calcKeyId.js";
+
+import { convertPrivateToPublic } from "isomorphic-pgp/parser/convertPrivateToPublic.js";
+
+import { generate } from "@isomorphic-pgp/generate";
+import { JWKtoPGP } from "@isomorphic-pgp/generate/browser/JWKtoPGP.js";
+import { createPrivateJWK } from "@isomorphic-pgp/generate/browser/createPrivateJWK.js";
+
 import { exampleJWK } from "./webcrypto/exampleJWK.js";
-import { calcKeyId, computeKeyId } from "./webcrypto/calcKeyId.js";
-import { verifySelfSignature } from "./webcrypto/verifySelfSignature.js";
-import { convertPrivateToPublic } from "./webcrypto/convertPrivateToPublic.js";
 
 import "./styles.css";
 
-import * as Message from "./pgp-signature/Message.js";
+import * as Message from "./isomorphic-pgp/parser/Message.js";
 
 let signature =
   "-----BEGIN PGP SIGNATURE-----\n\niQIcBAABAgAGBQJb0ldBAAoJEJYJuKWSi6a56N8P/14lzvTTxRT4+mTvmXH0I5Ol\nQZEZuki9vAcV5lcRuGNtJ/+dqFIb8nj3MKYy2E1bHUIQmb/Eqgw+fRASONtC4k3w\nXO98svGD4+HJvSkyvlBJA/p7MF0xad509MBHrzTEp5TsHciF74JC8tqzbeKyFrG/\n2vStQKoRceEhk2d4EKt0B7Q58pUSzdJvpivRyNwk/WTzRjaLybd0kxcuemnuArPG\nkZPcf/VWrxtQhIl8GCACf+0X9jcoB43h0VLsBMTea4sXRf3HkKzlMO1lOoFgf4KA\nezUEpbss6GoRwA/Qj7uPFSPj//0+cS/MwLOa0qRKtS7LQPFh3CnT/BhropMAuMmG\n253XgcKGuONdKw/OWIA/uctQwrnncZsGmKkGRKflt+6TsimMABMk9RS4eOzFKpHZ\nybU8oIINB9PmaI4Box1syxPUEsjC85w8c88pnvX7JlA6RJJ3c+6RO4lvefqN8TD1\nTASJK6C07gN5ZDBMBjlUud7be05lYrASu0jXy538C7bEhHFBPUqdKb/VtTszma2I\nX1Hx4uyh6C1EuSeGBQUUsQoXfPhxqjgsgrHSQ3sfabEJhlTBqKqmoWEhYotqmXC5\nY4yKEA486+ElQkPzi/SpsGe/gqaNp8A+50LwohZlA3LRc5W/D0pMIvIbCq/3a95A\nZ6e744fK9NMccQfO9b9z\n=4UMM\n-----END PGP SIGNATURE-----";
@@ -45,11 +50,15 @@ const printKey = txt => {
 };
 
 class App extends React.Component {
-  state = {
-    input: secretKey,
-    output: JSON.stringify(Message.parse(secretKey), null, 2),
-    keys: {}
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      input: secretKey,
+      output: JSON.stringify(Message.parse(secretKey), null, 2),
+      publicKey,
+      secretKey
+    };
+  }
   render() {
     return (
       <div className="App">
@@ -131,6 +140,19 @@ Status:
           >
             createPrivateJWK
           </button>
+          <button
+            onClick={async () => {
+              let secretKey = await generate({
+                userid: "CodeSandbox Random <random@example.com>",
+                timestamp: keyCreationTimestamp
+              });
+              let publicKey = await convertPrivateToPublic(secretKey);
+              this.setState({ ...this.state, publicKey, secretKey, input: secretKey });
+              console.log(secretKey);
+            }}
+          >
+            generate
+          </button>
         </div>
         <div>
           Do action:
@@ -161,30 +183,12 @@ Status:
           </button>
           <button
             onClick={async () => {
-              let text = await exportPublicKey(
-                this.state.publicJWK,
-                this.state.privateJWK,
-                "CodeSandbox <test@example.com>",
-                keyCreationTimestamp
-              );
-              this.setState({ ...this.state, input: text, publicKey: text });
-              console.log(text);
-            }}
-          >
-            exportPublicKey
-          </button>
-          <button
-            onClick={async () => {
-              let text = await exportPrivateKey(
-                this.state.privateJWK,
-                "CodeSandbox <test@example.com>",
-                keyCreationTimestamp
-              );
+              let text = await JWKtoPGP(this.state.privateJWK, "CodeSandbox <test@example.com>", keyCreationTimestamp);
               this.setState({ ...this.state, input: text, secretKey: text });
               console.log(text);
             }}
           >
-            exportPrivateKey
+            JWKtoPGP
           </button>
           <button
             onClick={async () => {

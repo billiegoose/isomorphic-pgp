@@ -1,7 +1,7 @@
 import { sha1 } from "crypto-hash";
 import arrayBufferToHex from "array-buffer-to-hex";
-import * as Message from "../pgp-signature/Message.js";
-import * as PublicKey from "../pgp-signature/Packet/PublicKey.js";
+import * as Message from "isomorphic-pgp/parser/Message.js";
+import * as PublicKey from "isomorphic-pgp/parser/Packet/PublicKey.js";
 
 export async function calcKeyId(packet) {
   let buffer = await PublicKey.serializeForHash(packet);

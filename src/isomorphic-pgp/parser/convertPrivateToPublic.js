@@ -1,8 +1,6 @@
-// import BN from "bn.js";
-import * as Message from "../pgp-signature/Message.js";
-import * as SecretKey from "../pgp-signature/Packet/SecretKey.js";
-import { PacketTag } from "../pgp-signature/constants.js";
-// TODO: WORK IN PROGRESS
+import * as Message from "./Message.js";
+import * as SecretKey from "./Packet/SecretKey.js";
+
 export async function convertPrivateToPublic(openpgpPrivateKey) {
   let parsed = Message.parse(openpgpPrivateKey);
   let keyPacket = parsed.packets[0].packet;

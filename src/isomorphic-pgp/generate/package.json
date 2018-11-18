@@ -1,0 +1,5 @@
+{
+  "name": "@isomorphic-pgp/generate",
+  "main": "main",
+  "browser": "browser.js"
+}

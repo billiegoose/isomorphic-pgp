@@ -1,14 +1,15 @@
 import { BigInteger } from "jsbn";
-import * as Message from "../pgp-signature/Message.js";
-import * as UrlSafeBase64 from "../pgp-signature/UrlSafeBase64.js";
-import { payloadSignatureHashData } from "../pgp-signature/payloadSignatureHashData.js";
-import * as EMSA from "../pgp-signature/emsa.js";
 import { sha1 } from "crypto-hash";
-import { trimZeros } from "../pgp-signature/trimZeros.js";
-import { encode } from "../isomorphic-textencoder";
-import * as Uint16 from "../pgp-signature/Uint16.js";
-
 import arrayBufferToHex from "array-buffer-to-hex";
+
+import { encode } from "isomorphic-textencoder";
+
+import * as Message from "isomorphic-pgp/parser/Message.js";
+import * as UrlSafeBase64 from "isomorphic-pgp/parser/UrlSafeBase64.js";
+import { payloadSignatureHashData } from "isomorphic-pgp/parser/payloadSignatureHashData.js";
+import * as EMSA from "isomorphic-pgp/parser/emsa.js";
+import { trimZeros } from "isomorphic-pgp/parser/trimZeros.js";
+import * as Uint16 from "isomorphic-pgp/parser/Uint16.js";
 
 // TODO: WORK IN PROGRESS
 export async function sign(openpgpPrivateKey, payload, timestamp) {
