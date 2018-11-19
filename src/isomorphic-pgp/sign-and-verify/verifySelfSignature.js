@@ -17,8 +17,6 @@ export async function verifySelfSignature(openpgpPublicKey) {
   let buffer = await certificationSignatureHashData(publicKeyPacket, userIdPacket, selfSignaturePacket);
   let hash = await sha1(buffer, { outputFormat: "buffer" });
   hash = new Uint8Array(hash);
-  console.log("hash", arrayBufferToHex(hash)); // 90c9b728f814a93191cc1551493f06c88159ec68
-  console.log("left16", selfSignaturePacket.left16.toString(16));
 
   let jwkPublicKey = PublicKey.toJWK(publicKeyPacket);
 
@@ -29,7 +27,6 @@ export async function verifySelfSignature(openpgpPublicKey) {
 
   let signature = UrlSafeBase64.serialize(selfSignaturePacket.mpi.signature);
 
-  console.time("jsbn"); // 5ms
   let S = new BigInteger(arrayBufferToHex(signature), 16);
   let N = new BigInteger(arrayBufferToHex(UrlSafeBase64.serialize(publicKeyPacket.mpi.n)), 16);
   let E = new BigInteger(arrayBufferToHex(UrlSafeBase64.serialize(publicKeyPacket.mpi.e)), 16);
@@ -38,8 +35,6 @@ export async function verifySelfSignature(openpgpPublicKey) {
   let _hashbytes = M.toByteArray();
   _hashbytes.unshift(0);
   let _hash = new Uint8Array(_hashbytes);
-  console.log("_hash", _hash);
-  console.timeEnd("jsbn");
 
   let valid = hash.every((byte, index) => byte === _hash[index]);
   return valid;

@@ -1,4 +1,4 @@
-import crc24 from "crc/crc24";
+import crc24 from "crc/lib/crc24";
 import base64 from "base64-js";
 
 export function parse(str) {
