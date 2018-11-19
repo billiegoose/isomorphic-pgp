@@ -18,6 +18,7 @@
     "react": "16.5.2",
     "react-dom": "16.5.2",
     "react-object-inspector": "0.2.1",
+    "select-case": "1.0.0",
     "sha.js": "2.4.11"
   },
   "devDependencies": {
@@ -43,7 +44,6 @@
     "@isomorphic-pgp/generate": "/src/isomorphic-pgp/generate",
     "@isomorphic-pgp/parser": "/src/isomorphic-pgp/parser",
     "@isomorphic-pgp/sign-and-verify": "/src/isomorphic-pgp/sign-and-verify",
-    "@isomorphic-pgp/util": "/src/isomorphic-pgp/util",
-    "select-case": "/src/select-case"
+    "@isomorphic-pgp/util": "/src/isomorphic-pgp/util"
   }
 }

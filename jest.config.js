@@ -4,7 +4,6 @@ module.exports = {
     "@isomorphic-pgp/generate(.*)$": "<rootDir>/src/isomorphic-pgp/generate$1",
     "@isomorphic-pgp/parser(.*)$": "<rootDir>/src/isomorphic-pgp/parser$1",
     "@isomorphic-pgp/sign-and-verify(.*)$": "<rootDir>/src/isomorphic-pgp/sign-and-verify$1",
-    "@isomorphic-pgp/util(.*)$": "<rootDir>/src/isomorphic-pgp/util$1",
-    "select-case(.*)$": "<rootDir>/src/select-case$1"
+    "@isomorphic-pgp/util(.*)$": "<rootDir>/src/isomorphic-pgp/util$1"
   }
 };
