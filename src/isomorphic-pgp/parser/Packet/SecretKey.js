@@ -1,9 +1,10 @@
 import concatenate from "concat-buffers";
+import { select } from "select-case";
+
 import * as MPI from "../MPI.js";
 import * as Uint32 from "../Uint32.js";
 import * as Uint16 from "../Uint16.js";
 import { PublicKeyAlgorithm } from "../constants.js";
-import { select } from "../select.js";
 
 function checksum16(buffers) {
   let i = 0;

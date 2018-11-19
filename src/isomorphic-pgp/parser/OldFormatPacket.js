@@ -1,11 +1,12 @@
 import concatenate from "concat-buffers";
+import { select } from "select-case";
+
 import { bits } from "./bits.js";
 import { PacketTag, OldPacketLengthType } from "./constants.js";
 import * as SignaturePacket from "./Packet/Signature.js";
 import * as PublicKeyPacket from "./Packet/PublicKey.js";
 import * as SecretKeyPacket from "./Packet/SecretKey.js";
 import * as UserIdPacket from "./Packet/UserId.js";
-import { select } from "./select.js";
 import * as Uint16 from "./Uint16.js";
 import * as Uint32 from "./Uint32.js";
 

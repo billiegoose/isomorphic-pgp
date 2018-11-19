@@ -1,5 +1,6 @@
 import concatenate from "concat-buffers";
-import { select } from "../../select.js";
+import { select } from "select-case";
+
 import * as UrlSafeBase64 from "../../UrlSafeBase64.js";
 
 import * as Length from "./Length.js";

@@ -1,7 +1,5 @@
 import { sha1 } from "crypto-hash";
-import arrayBufferToHex from "array-buffer-to-hex";
-import * as Message from "isomorphic-pgp/parser/Message.js";
-import * as PublicKey from "isomorphic-pgp/parser/Packet/PublicKey.js";
+import * as PublicKey from "@isomorphic-pgp/parser/Packet/PublicKey.js";
 
 export async function calcKeyId(packet) {
   let buffer = await PublicKey.serializeForHash(packet);
@@ -10,11 +8,4 @@ export async function calcKeyId(packet) {
   let fingerprint = hash;
   let keyid = hash.slice(12);
   return { fingerprint, keyid };
-}
-
-export async function computeKeyId(openpgptext) {
-  let message = Message.parse(openpgptext);
-  let publicKeyPacket = message.packets[0].packet;
-  let { keyid } = await calcKeyId(publicKeyPacket);
-  return arrayBufferToHex(keyid);
 }

@@ -4,11 +4,11 @@ import arrayBufferToHex from "array-buffer-to-hex";
 
 import { encode } from "isomorphic-textencoder";
 
-import * as Message from "isomorphic-pgp/parser/Message.js";
-import * as UrlSafeBase64 from "isomorphic-pgp/parser/UrlSafeBase64.js";
-import { payloadSignatureHashData } from "isomorphic-pgp/parser/payloadSignatureHashData.js";
-import * as EMSA from "isomorphic-pgp/parser/emsa.js";
-import { trimZeros } from "isomorphic-pgp/parser/trimZeros.js";
+import * as Message from "@isomorphic-pgp/parser/Message.js";
+import * as UrlSafeBase64 from "@isomorphic-pgp/parser/UrlSafeBase64.js";
+import { payloadSignatureHashData } from "@isomorphic-pgp/parser/payloadSignatureHashData.js";
+import * as EMSA from "@isomorphic-pgp/parser/emsa.js";
+import { trimZeros } from "@isomorphic-pgp/parser/util/trimZeros.js";
 
 export async function verify(openpgpPublicKey, openpgpSignature, payload) {
   console.log("openpgpPublicKey", openpgpPublicKey);

@@ -1,4 +1,4 @@
-import * as Packet from "../pgp-signature/Packet.js";
+import * as OldFormatPacket from "../OldFormatPacket.js";
 
 let fixture = {
   type: 0,
@@ -73,8 +73,7 @@ let _fixture = {
         {
           type: 16,
           subpacket: {
-            issuer: "lgm4pZKLprk",
-            issuer_s: "9609b8a5928ba6b9"
+            issuer: "lgm4pZKLprk"
           }
         }
       ]
@@ -86,14 +85,14 @@ let _fixture = {
   }
 };
 
-describe("Packet", () => {
+describe("OldFormatPacket", () => {
   test("serialize -> parse", () => {
-    let _data = Packet.serialize(_fixture);
+    let _data = OldFormatPacket.serialize(_fixture);
     let a = {
       b: _data,
       i: 0
     };
-    let result = Packet.parse(a, { type: 0, type_s: "old" });
+    let result = OldFormatPacket.parse(a, { type: 0, type_s: "old" });
     expect(result).toEqual(fixture);
   });
 });

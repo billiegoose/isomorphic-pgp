@@ -1,4 +1,4 @@
-import * as UrlSafeBase64 from "../pgp-signature/UrlSafeBase64.js";
+import * as UrlSafeBase64 from "../UrlSafeBase64.js";
 
 // prettier-ignore
 let fixtureBase64u = "SGVsbG8gV29ybGQh";
