@@ -14,6 +14,7 @@
     "crc": "3.8.0",
     "crypto-hash": "1.0.0",
     "define-lazy-prop": "1.0.0",
+    "isomorphic-textencoder": "1.0.0",
     "jsbn": "1.1.0",
     "react": "16.5.2",
     "react-dom": "16.5.2",
@@ -40,7 +41,6 @@
   },
   "browserslist": [">0.2%", "not dead", "not ie <= 11", "not op_mini all"],
   "alias": {
-    "isomorphic-textencoder": "/src/isomorphic-textencoder",
     "@isomorphic-pgp/generate": "/src/isomorphic-pgp/generate",
     "@isomorphic-pgp/parser": "/src/isomorphic-pgp/parser",
     "@isomorphic-pgp/sign-and-verify": "/src/isomorphic-pgp/sign-and-verify",
