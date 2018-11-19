@@ -30,10 +30,7 @@
     "@types/react-dom": "16.0.9"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test --env=jsdom",
-    "eject": "react-scripts eject"
+    "test": "jest --testEnvironment=node"
   },
   "browserslist": [">0.2%", "not dead", "not ie <= 11", "not op_mini all"],
   "alias": {
