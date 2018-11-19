@@ -27,7 +27,12 @@
     "@types/define-lazy-prop": "1.0.0",
     "@types/jsbn": "1.2.29",
     "@types/react": "16.7.6",
-    "@types/react-dom": "16.0.9"
+    "@types/react-dom": "16.0.9",
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
+    "babel-plugin-transform-react-jsx": "^6.24.1",
+    "babel-plugin-transform-runtime": "^6.23.0",
+    "babel-preset-env": "^1.7.0",
+    "jest": "^23.6.0"
   },
   "scripts": {
     "test": "jest --testEnvironment=node"
