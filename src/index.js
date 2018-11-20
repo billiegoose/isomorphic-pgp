@@ -6,7 +6,7 @@ import { sign } from "@isomorphic-pgp/sign-and-verify/sign.js";
 import { verify } from "@isomorphic-pgp/sign-and-verify/verify.js";
 import { verifySelfSignature } from "@isomorphic-pgp/sign-and-verify/verifySelfSignature.js";
 
-import { computeKeyId } from "@isomorphic-pgp/util/computeKeyId.js";
+import { keyId } from "@isomorphic-pgp/util/keyId.js";
 
 import { convertPrivateToPublic } from "@isomorphic-pgp/parser/convertPrivateToPublic.js";
 import * as Message from "@isomorphic-pgp/parser/Message.js";
@@ -177,7 +177,7 @@ Status:
           </button>
           <button
             onClick={async () => {
-              let id = await computeKeyId(this.state.input);
+              let id = await keyId(this.state.input);
               console.log(id);
             }}
           >

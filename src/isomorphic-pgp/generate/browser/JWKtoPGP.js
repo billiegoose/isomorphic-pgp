@@ -11,7 +11,7 @@ import { trimZeros } from "@isomorphic-pgp/parser/util/trimZeros.js";
 import { roundPowerOfTwo } from "@isomorphic-pgp/parser/util/roundPowerOfTwo.js";
 import * as Uint16 from "@isomorphic-pgp/parser/Uint16.js";
 
-import { calcKeyId } from "@isomorphic-pgp/util/calcKeyId.js";
+import { fingerprint } from "@isomorphic-pgp/util/fingerprint.js";
 
 // TODO: WORK IN PROGRESS
 export async function JWKtoPGP(jwk, author, timestamp) {
@@ -33,7 +33,7 @@ export async function JWKtoPGP(jwk, author, timestamp) {
   let u = UrlSafeBase64.parse(_U);
   secretKeyPacket.mpi.u = u;
 
-  let { fingerprint, keyid } = await calcKeyId(secretKeyPacket);
+  let keyidBuffer = (await fingerprint(secretKeyPacket)).slice(12);
 
   let userIdPacket = { userid: author };
 
@@ -109,7 +109,7 @@ export async function JWKtoPGP(jwk, author, timestamp) {
         {
           type: 16,
           subpacket: {
-            issuer: UrlSafeBase64.parse(keyid)
+            issuer: UrlSafeBase64.parse(keyidBuffer)
           }
         }
       ]
