@@ -1,20 +1,19 @@
-import { BigInteger } from "jsbn";
-import { sha1 } from "crypto-hash";
-import arrayBufferToHex from "array-buffer-to-hex";
+const { BigInteger } = require("jsbn");
+const { sha1 } = require("crypto-hash");
+const arrayBufferToHex = require("array-buffer-to-hex");
 
-import * as UrlSafeBase64 from "@isomorphic-pgp/parser/UrlSafeBase64.js";
-import * as Message from "@isomorphic-pgp/parser/Message.js";
-import * as SecretKey from "@isomorphic-pgp/parser/Packet/SecretKey.js";
-import { certificationSignatureHashData } from "@isomorphic-pgp/parser/certificationSignatureHashData.js";
-import * as EMSA from "@isomorphic-pgp/parser/emsa.js";
-import * as Uint16 from "@isomorphic-pgp/parser/Uint16.js";
+const UrlSafeBase64 = require("@isomorphic-pgp/parser/UrlSafeBase64.js");
+const Message = require("@isomorphic-pgp/parser/Message.js");
+const SecretKey = require("@isomorphic-pgp/parser/Packet/SecretKey.js");
+const EMSA = require("@isomorphic-pgp/parser/emsa.js");
+const Uint16 = require("@isomorphic-pgp/parser/Uint16.js");
+const { certificationSignatureHashData } = require("@isomorphic-pgp/parser/certificationSignatureHashData.js");
 
-import { trimZeros } from "@isomorphic-pgp/util/trimZeros.js";
-import { roundPowerOfTwo } from "@isomorphic-pgp/util/roundPowerOfTwo.js";
-import { fingerprint } from "@isomorphic-pgp/util/fingerprint.js";
+const { fingerprint } = require("@isomorphic-pgp/util/fingerprint.js");
+const { trimZeros } = require("@isomorphic-pgp/util/trimZeros.js");
+const { roundPowerOfTwo } = require("@isomorphic-pgp/util/roundPowerOfTwo.js");
 
-// TODO: WORK IN PROGRESS
-export async function JWKtoPGP(jwk, author, timestamp) {
+module.exports.JWKtoPGP = async function JWKtoPGP(jwk, author, timestamp) {
   if (jwk.kty !== "RSA" || jwk.alg !== "RS1") throw new Error("Only RSA keys supported at this time");
 
   let e = UrlSafeBase64.serialize(jwk.e);

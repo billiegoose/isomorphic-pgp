@@ -1,5 +1,41 @@
 {
+  "publishConfig": {
+    "access": "public"
+  },
   "name": "@isomorphic-pgp/generate",
-  "main": "main",
-  "browser": "browser.js"
+  "version": "0.0.0",
+  "description": "Generates an OpenPGP keypair",
+  "main": "main.js",
+  "browser": "browser.js",
+  "scripts": {
+    "test": "karmatic"
+  },
+  "dependencies": {
+    "@isomorphic-pgp/parser": "0.0.0",
+    "@isomorphic-pgp/util": "0.0.1",
+    "array-buffer-to-hex": "^1.0.0",
+    "crypto-hash": "^1.0.0",
+    "jsbn": "^1.1.0"
+  },
+  "devDependencies": {
+    "karmatic": "^1.2.0",
+    "webpack": "^4.26.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wmhilton/isomorphic-pgp.git"
+  },
+  "keywords": [
+    "pgp",
+    "openpgp",
+    "gpg",
+    "generate",
+    "create"
+  ],
+  "author": "William Hilton <wmhilton@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/wmhilton/isomorphic-pgp/issues"
+  },
+  "homepage": "https://github.com/wmhilton/isomorphic-pgp#readme"
 }

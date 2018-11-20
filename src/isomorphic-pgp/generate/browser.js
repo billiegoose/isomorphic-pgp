@@ -1,7 +1,7 @@
-import { createPrivateJWK } from "./browser/createPrivateJWK.js";
-import { JWKtoPGP } from "./browser/JWKtoPGP.js";
+const { createPrivateJWK } = require("./browser/createPrivateJWK.js");
+const { JWKtoPGP } = require("./browser/JWKtoPGP.js");
 
-export async function generate({ userid, timestamp }) {
+module.exports.generate = async function generate({ userid, timestamp }) {
   let jwk = await createPrivateJWK();
   return JWKtoPGP(jwk, userid, timestamp);
 }

@@ -1,4 +1,4 @@
-export async function createPrivateJWK() {
+module.exports.createPrivateJWK = async function createPrivateJWK() {
   let keys = await crypto.subtle.generateKey(
     {
       name: "RSASSA-PKCS1-v1_5",
