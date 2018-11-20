@@ -7,10 +7,10 @@ import * as Message from "@isomorphic-pgp/parser/Message.js";
 import * as SecretKey from "@isomorphic-pgp/parser/Packet/SecretKey.js";
 import { certificationSignatureHashData } from "@isomorphic-pgp/parser/certificationSignatureHashData.js";
 import * as EMSA from "@isomorphic-pgp/parser/emsa.js";
-import { trimZeros } from "@isomorphic-pgp/parser/util/trimZeros.js";
-import { roundPowerOfTwo } from "@isomorphic-pgp/parser/util/roundPowerOfTwo.js";
 import * as Uint16 from "@isomorphic-pgp/parser/Uint16.js";
 
+import { trimZeros } from "@isomorphic-pgp/util/trimZeros.js";
+import { roundPowerOfTwo } from "@isomorphic-pgp/util/roundPowerOfTwo.js";
 import { fingerprint } from "@isomorphic-pgp/util/fingerprint.js";
 
 // TODO: WORK IN PROGRESS

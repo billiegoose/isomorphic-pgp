@@ -27,6 +27,7 @@
   "dependencies": {
     "@isomorphic-pgp/parser": "0.0.0",
     "array-buffer-to-hex": "^1.0.0",
+    "concat-buffers": "^1.0.0",
     "crypto-hash": "^1.0.0"
   },
   "devDependencies": {
