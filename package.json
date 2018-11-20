@@ -39,7 +39,12 @@
   "scripts": {
     "test": "jest --testEnvironment=node"
   },
-  "browserslist": [">0.2%", "not dead", "not ie <= 11", "not op_mini all"],
+  "browserslist": [
+    ">0.2%",
+    "not dead",
+    "not ie <= 11",
+    "not op_mini all"
+  ],
   "alias": {
     "@isomorphic-pgp/generate": "/src/isomorphic-pgp/generate",
     "@isomorphic-pgp/parser": "/src/isomorphic-pgp/parser",

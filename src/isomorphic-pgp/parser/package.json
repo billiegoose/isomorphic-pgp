@@ -1,0 +1,40 @@
+{
+  "name": "@isomorphic-pgp/parser",
+  "version": "0.0.0",
+  "description": "An OpenPGP message parser",
+  "main": "dist",
+  "module": "src",
+  "scripts": {
+    "build": "shx rm -rf dist && shx cp -R src dist && jscodeshift -t transform-imports.js dist && jscodeshift -t transform-exports.js dist",
+    "test": "jest --testEnvironment=node"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wmhilton/isomorphic-pgp.git"
+  },
+  "keywords": [
+    "openpgp",
+    "pgp",
+    "gpg"
+  ],
+  "author": "William Hilton <wmhilton@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/wmhilton/isomorphic-pgp/issues"
+  },
+  "homepage": "https://github.com/wmhilton/isomorphic-pgp#readme",
+  "dependencies": {
+    "array-buffer-to-hex": "^1.0.0",
+    "base64-js": "^1.3.0",
+    "bn.js": "^4.11.8",
+    "concat-buffers": "^1.0.0",
+    "crc": "^3.8.0",
+    "isomorphic-textencoder": "^1.0.0",
+    "select-case": "^1.0.0"
+  },
+  "devDependencies": {
+    "jest": "^23.6.0",
+    "jscodeshift": "^0.5.1",
+    "shx": "^0.3.2"
+  }
+}

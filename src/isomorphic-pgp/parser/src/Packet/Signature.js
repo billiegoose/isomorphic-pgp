@@ -1,9 +1,10 @@
+import concatenate from "concat-buffers";
+
 import * as MPI from "../MPI.js";
 import * as Uint16 from "../Uint16.js";
 import * as Uint32 from "../Uint32.js";
 import { SignatureType, HashAlgorithm, PublicKeyAlgorithm } from "../constants.js";
 import * as SubpacketArray from "./SignatureSubpacket/SubpacketArray.js";
-import concatenate from "concat-buffers";
 
 export function parse(b) {
   let [version, type, alg, hash, hashed1, hashed2] = b;
