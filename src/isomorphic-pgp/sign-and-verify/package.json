@@ -3,7 +3,8 @@
     "access": "public"
   },
   "name": "@isomorphic-pgp/sign-and-verify",
-  "version": "0.0.1",
+  "version": "0.0.2",
+  "main": "index.js",
   "description": "Create and verify OpenPGP signatures",
   "scripts": {
     "test": "jest --testEnvironment=node"
