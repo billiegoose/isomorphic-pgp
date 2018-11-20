@@ -1,14 +1,15 @@
-import { BigInteger } from "jsbn";
-import { sha1 } from "crypto-hash";
-import arrayBufferToHex from "array-buffer-to-hex";
+const { BigInteger } = require("jsbn");
+const { sha1 } = require("crypto-hash");
+const arrayBufferToHex = require("array-buffer-to-hex");
 
-import * as Message from "@isomorphic-pgp/parser/Message.js";
-import * as PublicKey from "@isomorphic-pgp/parser/Packet/PublicKey.js";
-import * as UrlSafeBase64 from "@isomorphic-pgp/parser/UrlSafeBase64.js";
-import * as EMSA from "@isomorphic-pgp/parser/emsa.js";
-import { certificationSignatureHashData } from "@isomorphic-pgp/parser/certificationSignatureHashData.js";
+const Message = require("@isomorphic-pgp/parser/Message.js");
+const PublicKey = require("@isomorphic-pgp/parser/Packet/PublicKey.js");
+const UrlSafeBase64 = require("@isomorphic-pgp/parser/UrlSafeBase64.js");
+const EMSA = require("@isomorphic-pgp/parser/emsa.js");
 
-export async function verifySelfSignature(openpgpPublicKey) {
+const { certificationSignatureHashData } = require("@isomorphic-pgp/parser/certificationSignatureHashData.js");
+
+module.exports.verifySelfSignature = async function verifySelfSignature(openpgpPublicKey) {
   let parsed = Message.parse(openpgpPublicKey);
   let publicKeyPacket = parsed.packets[0].packet;
   let userIdPacket = parsed.packets[1].packet;
