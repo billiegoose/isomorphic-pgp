@@ -1,4 +1,4 @@
-const { sha1 } = require("@wmhilton/crypto-hash");
+const { sha1 } = require("crypto-hash");
 const PublicKey = require("@isomorphic-pgp/parser/Packet/PublicKey.js");
 
 module.exports.fingerprint = async function fingerprint(packet) {

@@ -3,7 +3,7 @@
     "access": "public"
   },
   "name": "@isomorphic-pgp/sign-and-verify",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "main": "index.js",
   "description": "Create and verify OpenPGP signatures",
   "scripts": {
@@ -28,7 +28,7 @@
   "homepage": "https://github.com/wmhilton/isomorphic-pgp#readme",
   "dependencies": {
     "@isomorphic-pgp/parser": "0.0.0",
-    "@isomorphic-pgp/util": "0.0.2",
+    "@isomorphic-pgp/util": "0.0.3",
     "array-buffer-to-hex": "^1.0.0",
     "crypto-hash": "^1.0.0",
     "isomorphic-textencoder": "^1.0.0",
