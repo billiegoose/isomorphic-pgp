@@ -10,7 +10,7 @@ let output = {
 };
 
 describe("Issuer", () => {
-  test("parse -> serialize", () => {
+  it("parse -> serialize", () => {
     let result = Issuer.parse(Issuer.serialize(input));
     expect(result).toEqual(output);
   });

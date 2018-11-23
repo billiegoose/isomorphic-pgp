@@ -87,7 +87,7 @@ let _fixture = {
 };
 
 describe("Packet", () => {
-  test("serialize -> parse", () => {
+  it("serialize -> parse", () => {
     let _data = Packet.serialize(_fixture);
     let a = {
       b: _data,

@@ -40,7 +40,7 @@ let fixture = {
 };
 
 describe("Signature Packet", () => {
-  test("serialize -> parse", () => {
+  it("serialize -> parse", () => {
     let _data = SignaturePacket.serialize(fixture);
     let result = SignaturePacket.parse(_data);
     expect(result).toEqual(fixture);

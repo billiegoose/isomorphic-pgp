@@ -23,12 +23,12 @@ let jwk = {
 };
 
 describe("PublicKey Packet", () => {
-  test("serialize -> parse", () => {
+  it("serialize -> parse", () => {
     let _data = PublicKeyPacket.serialize(fixture);
     let result = PublicKeyPacket.parse(_data);
     expect(result).toEqual(fixture);
   });
-  test("fromJWK -> serialize -> parse -> toJWK", () => {
+  it("fromJWK -> serialize -> parse -> toJWK", () => {
     let packet = PublicKeyPacket.fromJWK(jwk, { creation: 1479107004 });
     let _data = PublicKeyPacket.serialize(packet);
     let _packet = PublicKeyPacket.parse(_data);

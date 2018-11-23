@@ -1,7 +1,7 @@
 const MPI = require("../MPI.js");
 
 describe("MPI", () => {
-  test("serialize -> parse", () => {
+  it("serialize -> parse", () => {
     let fixtures = ["wpYJwrjCpcKSwovCpsK5", "AQAB"];
     // prettier-ignore
     for (let fixture of fixtures) {

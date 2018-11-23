@@ -47,7 +47,7 @@ let output = [
 ];
 
 describe("Signature SubpacketArray", () => {
-  test("serialize -> parse", () => {
+  it("serialize -> parse", () => {
     let _data = SubpacketArray.serialize(input);
     let result = SubpacketArray.parse(_data);
     expect(result).toEqual(output);

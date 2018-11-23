@@ -86,7 +86,7 @@ let _fixture = {
 };
 
 describe("OldFormatPacket", () => {
-  test("serialize -> parse", () => {
+  it("serialize -> parse", () => {
     let _data = OldFormatPacket.serialize(_fixture);
     let a = {
       b: _data,

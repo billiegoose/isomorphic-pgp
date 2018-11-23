@@ -56,7 +56,7 @@ let fixture = {
 };
 
 describe("Message", () => {
-  test("serialize -> parse", () => {
+  it("serialize -> parse", () => {
     let _data = Message.serialize(fixture);
     let result = Message.parse(_data);
     expect(result).toEqual(fixture);

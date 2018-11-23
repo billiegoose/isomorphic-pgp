@@ -50,7 +50,7 @@ let fixtures = [
 ];
 
 describe("Signature Subpacket", () => {
-  test("serialize -> parse", () => {
+  it("serialize -> parse", () => {
     for (const [input, output] of fixtures) {
       let _data = Subpacket.serialize(input);
       let a = {

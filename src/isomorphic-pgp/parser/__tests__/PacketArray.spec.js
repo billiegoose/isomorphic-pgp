@@ -53,7 +53,7 @@ let fixture = [
 ];
 
 describe("PacketArray", () => {
-  test("serialize -> parse", () => {
+  it("serialize -> parse", () => {
     let _data = PacketArray.serialize(fixture);
     let result = PacketArray.parse(_data);
     expect(result).toEqual(fixture);

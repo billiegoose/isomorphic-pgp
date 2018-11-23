@@ -4,7 +4,7 @@ const CreationTime = require("../CreationTime.js");
 let time = {creation: Math.floor(Date.now() / 1000)}
 
 describe("CreationTime", () => {
-  test("parse -> serialize", () => {
+  it("parse -> serialize", () => {
     let result = CreationTime.parse(CreationTime.serialize(time));
     expect(result).toEqual(time);
   });

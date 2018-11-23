@@ -46,10 +46,10 @@ module.exports.serializeForHash = function serializeForHash(packet) {
 }
 
 module.exports.fromJWK = function fromJWK(jwk, { creation }) {
-  return {
+  return Object.assign({
     version: 4,
     creation,
-    ...select(jwk.kty, {
+  }, select(jwk.kty, {
       RSA: () => ({
         alg: 1,
         alg_s: PublicKeyAlgorithm[1],
@@ -60,7 +60,7 @@ module.exports.fromJWK = function fromJWK(jwk, { creation }) {
       }),
       default: () => ({})
     })
-  };
+  );
 }
 
 module.exports.toJWK = function toJWK(packet) {
@@ -68,10 +68,10 @@ module.exports.toJWK = function toJWK(packet) {
     alg,
     mpi: { e, n }
   } = packet;
-  return {
+  return Object.assign({
     key_ops: ["verify"],
     ext: true,
-    ...select(alg, {
+  }, select(alg, {
       1: () => ({
         kty: "RSA",
         alg: "RS1",
@@ -80,5 +80,5 @@ module.exports.toJWK = function toJWK(packet) {
       }),
       default: () => ({})
     })
-  };
+  );
 }

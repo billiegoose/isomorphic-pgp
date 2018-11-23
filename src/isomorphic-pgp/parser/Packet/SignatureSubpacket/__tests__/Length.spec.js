@@ -3,7 +3,7 @@ const Length = require("../Length.js");
 let fixture = 100;
 
 describe("Length", () => {
-  test("parse -> serialize", () => {
+  it("parse -> serialize", () => {
     // prettier-ignore
     for (let fixture of [new Uint8Array([0]), new Uint8Array([191]), new Uint8Array([192, 0])]) {
       let a = {
@@ -15,7 +15,7 @@ describe("Length", () => {
       expect(_data).toEqual(fixture);
     }
   });
-  test("serialize -> parse", () => {
+  it("serialize -> parse", () => {
     // prettier-ignore
     for (let fixture of [0, 1, 2, 50, 100, 191, 192, 193, 16319, 16320, 16321]) {
       let _data = Length.serialize(fixture);

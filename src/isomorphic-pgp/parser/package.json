@@ -3,10 +3,10 @@
     "access": "public"
   },
   "name": "@isomorphic-pgp/parser",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "An OpenPGP message parser",
   "scripts": {
-    "test": "jest --testEnvironment=node"
+    "test": "jest --testEnvironment=node --coverage && karma start --single-run"
   },
   "repository": {
     "type": "git",
@@ -30,7 +30,21 @@
     "clz-buffer": "^1.0.0",
     "concat-buffers": "^1.0.0",
     "crc": "^3.8.0",
-    "isomorphic-textencoder": "^1.0.0",
+    "isomorphic-textencoder": "^1.0.1",
     "select-case": "^1.0.0"
+  },
+  "devDependencies": {
+    "karma": "^3.1.1",
+    "karma-chrome-launcher": "^2.2.0",
+    "karma-edge-launcher": "^0.4.2",
+    "karma-firefox-launcher": "^1.1.0",
+    "karma-jasmine": "^2.0.1",
+    "karma-junit-reporter": "^1.2.0",
+    "karma-safari-launcher": "^1.0.0",
+    "karma-sauce-launcher": "^1.2.0",
+    "karma-verbose-reporter": "0.0.6",
+    "karma-webpack": "^3.0.5",
+    "puppeteer": "^1.10.0",
+    "webpack": "^4.26.0"
   }
 }

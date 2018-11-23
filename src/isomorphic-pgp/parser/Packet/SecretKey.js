@@ -39,13 +39,12 @@ module.exports.parse = function parse(b) {
   let checksum = checksum16([_remainder.b.slice(_remainder.i, -2)]);
   switch (alg) {
     case 1: {
-      mpi = {
-        ...mpi,
+      Object.assign(mpi, {
         d: MPI.parse(_remainder),
         p: MPI.parse(_remainder),
         q: MPI.parse(_remainder),
         u: MPI.parse(_remainder)
-      };
+      });
       break;
     }
   }
@@ -89,37 +88,36 @@ module.exports.serializeForHash = function serializeForHash(packet) {
   return concatenate(buffers);
 }
 
+// NOTE: user must compute and add 'u' to jwk data
 module.exports.fromJWK = function fromJWK(jwk, { creation }) {
-  let { n, e, d, p, q } = jwk;
-  return {
+  let { n, e, d, p, q, u } = jwk;
+  return Object.assign({
     version: 4,
     creation,
-    ...select(jwk.kty, {
+  }, select(jwk.kty, {
       RSA: () => ({
         alg: 1,
         alg_s: PublicKeyAlgorithm[1],
-        // TODO: Figure out how to compute u.
-        // I think it's
-        // packet.mpi.u = new BigInteger(p).modInverse(q)
-        mpi: { n, e, d, p, q, u: null }
+        mpi: { n, e, d, p, q, u }
       })
     })
-  };
+  );
 }
 
+// Note: output includes the extraneous 'u' parameter
 module.exports.toJWK = function toJWK(packet) {
   let {
     alg,
-    mpi: { e, n, d, p, q }
+    mpi: { e, n, d, p, q, u }
   } = packet;
-  return {
+  return Object.assign({
     key_ops: ["sign"],
     ext: true,
-    ...select(alg, {
+  }, select(alg, {
       // Note: JWK does not export a 'u' parameter
-      1: () => ({ kty: "RSA", alg: "RS1", e, n, d, p, q })
+      1: () => ({ kty: "RSA", alg: "RS1", e, n, d, p, q, u })
     })
-  };
+  );
 }
 
 module.exports.toPublicKey = function toPublicKey(packet) {

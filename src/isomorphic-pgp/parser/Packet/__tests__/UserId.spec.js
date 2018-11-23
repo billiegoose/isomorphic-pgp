@@ -5,7 +5,7 @@ let fixture = {
 };
 
 describe("UserId Packet", () => {
-  test("serialize -> parse", () => {
+  it("serialize -> parse", () => {
     let _data = UserIdPacket.serialize(fixture);
     let result = UserIdPacket.parse(_data);
     expect(result).toEqual(fixture);
