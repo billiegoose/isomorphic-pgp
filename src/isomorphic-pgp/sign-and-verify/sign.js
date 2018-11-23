@@ -1,5 +1,5 @@
 const { BigInteger } = require("jsbn");
-const { sha1 } = require("crypto-hash");
+const { hashes } = require("./hashes.js");
 const arrayBufferToHex = require("array-buffer-to-hex");
 const { encode } = require("isomorphic-textencoder");
 
@@ -7,6 +7,7 @@ const Message = require("@isomorphic-pgp/parser/Message.js");
 const UrlSafeBase64 = require("@isomorphic-pgp/parser/UrlSafeBase64.js");
 const Uint16 = require("@isomorphic-pgp/parser/Uint16.js");
 const EMSA = require("@isomorphic-pgp/parser/emsa.js");
+const { HashAlgorithm } = require("@isomorphic-pgp/parser/constants.js");
 const { payloadSignatureHashData } = require("@isomorphic-pgp/parser/payloadSignatureHashData.js");
 
 const { trimZeros } = require("@isomorphic-pgp/util/trimZeros.js");
@@ -37,7 +38,7 @@ module.exports.sign = async function sign(openpgpPrivateKey, payload, timestamp)
     version: 4,
     type: 0,
     alg: 1,
-    hash: 2,
+    hash: 8,
     hashed: {
       subpackets: [
         {
@@ -50,13 +51,14 @@ module.exports.sign = async function sign(openpgpPrivateKey, payload, timestamp)
     }
   };
 
+  const hashType = HashAlgorithm[partialSignaturePacket.hash]
   payload = typeof payload === "string" ? encode(payload) : payload;
   let buffer = await payloadSignatureHashData(payload, partialSignaturePacket);
-  let hash = await sha1(buffer, { outputFormat: "buffer" });
+  let hash = await hashes[hashType](buffer, { outputFormat: "buffer" });
   hash = new Uint8Array(hash);
   let left16 = Uint16.parse([hash[0], hash[1]]);
   // Wrap `hash` in the dumbass EMSA-PKCS1-v1_5 padded message format:
-  hash = EMSA.encode("SHA1", hash, n.byteLength);
+  hash = EMSA.encode(hashType, hash, n.byteLength);
   let M = new BigInteger(arrayBufferToHex(hash), 16);
 
   // // Straightforward solution: ~ 679ms

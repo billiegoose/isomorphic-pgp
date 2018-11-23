@@ -3,7 +3,7 @@
     "access": "public"
   },
   "name": "@isomorphic-pgp/parser",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "An OpenPGP message parser",
   "scripts": {
     "test": "jest --testEnvironment=node"
