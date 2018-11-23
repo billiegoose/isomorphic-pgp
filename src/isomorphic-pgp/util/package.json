@@ -3,7 +3,7 @@
     "access": "public"
   },
   "name": "@isomorphic-pgp/util",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Miscellaneous pgp functions",
   "scripts": {
     "test": "jest --testEnvironment=node && karmatic"
@@ -28,7 +28,7 @@
     "@isomorphic-pgp/parser": "^0.0.1",
     "array-buffer-to-hex": "^1.0.0",
     "concat-buffers": "^1.0.0",
-    "crypto-hash": "^1.0.0"
+    "sha.js": "^2.4.11"
   },
   "devDependencies": {
     "jest": "^23.6.0",

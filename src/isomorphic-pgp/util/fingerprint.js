@@ -1,8 +1,8 @@
-const { sha1 } = require("crypto-hash");
 const PublicKey = require("@isomorphic-pgp/parser/Packet/PublicKey.js");
+const Hash = require("sha.js/sha1");
 
 module.exports.fingerprint = async function fingerprint(packet) {
   let buffer = await PublicKey.serializeForHash(packet);
-  let hash = await sha1(buffer, { outputFormat: "buffer" });
+  let hash = new Hash().update(buffer).digest();
   return new Uint8Array(hash);
 }
