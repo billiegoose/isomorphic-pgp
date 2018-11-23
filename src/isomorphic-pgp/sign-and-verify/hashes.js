@@ -1,4 +1,4 @@
-const { sha1, sha256, sha384, sha512 } = require('crypto-hash')
+const { sha1, sha256, sha384, sha512 } = require('@wmhilton/crypto-hash')
 const Hash = require('sha.js/sha1')
 
 module.exports.hashes = {
