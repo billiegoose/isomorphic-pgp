@@ -1,54 +1,20 @@
 {
-  "name": "openpgp-parser",
-  "version": "1.0.0",
-  "description": "",
-  "keywords": [],
-  "main": "src/index.html",
-  "license": "MIT",
-  "dependencies": {
-    "array-buffer-to-hex": "1.0.0",
-    "base64-js": "1.3.0",
-    "bn.js": "4.11.8",
-    "clz-buffer": "1.0.0",
-    "concat-buffers": "1.0.0",
-    "crc": "3.8.0",
-    "crypto-hash": "1.0.0",
-    "define-lazy-prop": "1.0.0",
-    "isomorphic-textencoder": "1.0.0",
-    "jsbn": "1.1.0",
-    "react": "16.5.2",
-    "react-dom": "16.5.2",
-    "react-object-inspector": "0.2.1",
-    "select-case": "1.0.0",
-    "sha.js": "2.4.11"
+  "private": true,
+  "scripts": {
+    "test": "jest --testEnvironment=node && karma start --single-run"
   },
   "devDependencies": {
-    "@types/base64-js": "1.2.5",
-    "@types/bn.js": "4.11.3",
-    "@types/crc": "3.4.0",
-    "@types/define-lazy-prop": "1.0.0",
-    "@types/jsbn": "1.2.29",
-    "@types/react": "16.7.6",
-    "@types/react-dom": "16.0.9",
-    "babel-plugin-transform-object-rest-spread": "^6.26.0",
-    "babel-plugin-transform-react-jsx": "^6.24.1",
-    "babel-plugin-transform-runtime": "^6.23.0",
-    "babel-preset-env": "^1.7.0",
-    "jest": "^23.6.0"
-  },
-  "scripts": {
-    "test": "jest --testEnvironment=node"
-  },
-  "browserslist": [
-    ">0.2%",
-    "not dead",
-    "not ie <= 11",
-    "not op_mini all"
-  ],
-  "alias": {
-    "@isomorphic-pgp/generate": "/src/isomorphic-pgp/generate",
-    "@isomorphic-pgp/parser": "/src/isomorphic-pgp/parser",
-    "@isomorphic-pgp/sign-and-verify": "/src/isomorphic-pgp/sign-and-verify",
-    "@isomorphic-pgp/util": "/src/isomorphic-pgp/util"
+    "karma": "^3.1.1",
+    "karma-chrome-launcher": "^2.2.0",
+    "karma-edge-launcher": "^0.4.2",
+    "karma-firefox-launcher": "^1.1.0",
+    "karma-jasmine": "^2.0.1",
+    "karma-junit-reporter": "^1.2.0",
+    "karma-safari-launcher": "^1.0.0",
+    "karma-sauce-launcher": "^1.2.0",
+    "karma-verbose-reporter": "0.0.6",
+    "karma-webpack": "^3.0.5",
+    "puppeteer": "^1.10.0",
+    "webpack": "^4.26.0"
   }
 }

@@ -21,16 +21,16 @@ module.exports = function (config) {
     frameworks: ['jasmine'],
     // list of files / patterns to load in the browser
     files: [
-      '__tests__/*.test.js',
-      'Packet/**/*.test.js',
+      'src/**/*.spec.js'
     ],
     // list of files to exclude
     exclude: [
+      '**/node_modules/**',
     ],
     // preprocess matching files before serving them to the browser
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
     preprocessors: {
-      '**/*.test.js': ['webpack']
+      'src/**/*.spec.js': ['webpack']
     },
     // web server port
     port: 9876,

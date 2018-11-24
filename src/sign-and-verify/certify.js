@@ -1,46 +1,39 @@
 const { BigInteger } = require("jsbn");
-const { sha1 } = require("crypto-hash");
+const { hashes } = require("./hashes.js");
 const arrayBufferToHex = require("array-buffer-to-hex");
 
-const UrlSafeBase64 = require("@isomorphic-pgp/parser/UrlSafeBase64.js");
 const Message = require("@isomorphic-pgp/parser/Message.js");
 const SecretKey = require("@isomorphic-pgp/parser/Packet/SecretKey.js");
-const EMSA = require("@isomorphic-pgp/parser/emsa.js");
+const UrlSafeBase64 = require("@isomorphic-pgp/parser/UrlSafeBase64.js");
 const Uint16 = require("@isomorphic-pgp/parser/Uint16.js");
+const EMSA = require("@isomorphic-pgp/parser/emsa.js");
+const { HashAlgorithm } = require("@isomorphic-pgp/parser/constants.js");
 const { certificationSignatureHashData } = require("@isomorphic-pgp/parser/certificationSignatureHashData.js");
 
 const { fingerprint } = require("@isomorphic-pgp/util/fingerprint.js");
 const { trimZeros } = require("@isomorphic-pgp/util/trimZeros.js");
 const { roundPowerOfTwo } = require("@isomorphic-pgp/util/roundPowerOfTwo.js");
 
-module.exports.JWKtoPGP = async function JWKtoPGP(jwk, author, timestamp) {
-  if (jwk.kty !== "RSA" || jwk.alg !== "RS1") throw new Error("Only RSA keys supported at this time");
+module.exports.certify = async function certify(privateKeyPacket, userIdPacket, timestamp) {
+  let e = UrlSafeBase64.serialize(privateKeyPacket.mpi.e);
+  let n = UrlSafeBase64.serialize(privateKeyPacket.mpi.n);
+  let d = UrlSafeBase64.serialize(privateKeyPacket.mpi.d);
+  let p = UrlSafeBase64.serialize(privateKeyPacket.mpi.p);
+  let q = UrlSafeBase64.serialize(privateKeyPacket.mpi.q);
+  let u = UrlSafeBase64.serialize(privateKeyPacket.mpi.u);
 
-  let e = UrlSafeBase64.serialize(jwk.e);
-  let n = UrlSafeBase64.serialize(jwk.n);
-  let d = UrlSafeBase64.serialize(jwk.d);
-  let p = UrlSafeBase64.serialize(jwk.p);
-  let q = UrlSafeBase64.serialize(jwk.q);
-
-  let secretKeyPacket = SecretKey.fromJWK(jwk, { creation: timestamp });
-
-  // Compute missing parameter u
+  // SIGN
+  let N = new BigInteger(arrayBufferToHex(n), 16);
+  let D = new BigInteger(arrayBufferToHex(d), 16);
   let P = new BigInteger(arrayBufferToHex(p), 16);
   let Q = new BigInteger(arrayBufferToHex(q), 16);
-  let U = P.modInverse(Q);
-  let _U = new Uint8Array(U.toByteArray());
-  let u = UrlSafeBase64.parse(_U);
-  secretKeyPacket.mpi.u = u;
-
-  let keyidBuffer = (await fingerprint(secretKeyPacket)).slice(12);
-
-  let userIdPacket = { userid: author };
+  let U = new BigInteger(arrayBufferToHex(u), 16);
 
   let partialSignaturePacket = {
     version: 4,
     type: 19,
     alg: 1,
-    hash: 2,
+    hash: 8,
     hashed: {
       subpackets: [
         {
@@ -59,22 +52,16 @@ module.exports.JWKtoPGP = async function JWKtoPGP(jwk, author, timestamp) {
     }
   };
 
-  let buffer = await certificationSignatureHashData(secretKeyPacket, userIdPacket, partialSignaturePacket);
-  let hash = await sha1(buffer, { outputFormat: "buffer" });
+  const hashType = HashAlgorithm[partialSignaturePacket.hash]
+  let buffer = await certificationSignatureHashData(privateKeyPacket, userIdPacket, partialSignaturePacket);
+  let hash = await hashes[hashType](buffer, { outputFormat: "buffer" });
   hash = new Uint8Array(hash);
-
   let left16 = Uint16.parse([hash[0], hash[1]]);
-
   // We need the modulus length in bytes
   let modulusLength = roundPowerOfTwo(n.byteLength);
-
   // TODO: Wrap `hash` in the dumbass EMSA-PKCS1-v1_5 padded message format:
   // https://github.com/openpgpjs/openpgpjs/blob/a35b4d28e0215c3a6654a4401c4e7e085b55e220/src/crypto/pkcs1.js
-  hash = EMSA.encode("SHA1", hash, modulusLength);
-
-  // SIGN
-  let N = new BigInteger(arrayBufferToHex(n), 16);
-  let D = new BigInteger(arrayBufferToHex(d), 16);
+  hash = EMSA.encode(hashType, hash, modulusLength);
   let M = new BigInteger(arrayBufferToHex(hash), 16);
 
   // // Straightforward solution: ~ 679ms
@@ -102,6 +89,8 @@ module.exports.JWKtoPGP = async function JWKtoPGP(jwk, author, timestamp) {
   signature = trimZeros(signature);
   signature = UrlSafeBase64.parse(new Uint8Array(signature));
 
+  let keyidBuffer = (await fingerprint(privateKeyPacket)).slice(12);
+
   let completeSignaturePacket = Object.assign({}, partialSignaturePacket, {
     unhashed: {
       subpackets: [
@@ -125,7 +114,7 @@ module.exports.JWKtoPGP = async function JWKtoPGP(jwk, author, timestamp) {
       {
         type: 0,
         tag: 5,
-        packet: secretKeyPacket
+        packet: privateKeyPacket
       },
       {
         type: 0,

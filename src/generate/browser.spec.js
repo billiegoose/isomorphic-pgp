@@ -1,6 +1,6 @@
 const { generate } = require('./browser.js')
 
-describe('Google', () => {
+describe('generate', () => {
   it('should generate a keypair', async () => {
     const openpgptext = await generate({
       userid: 'User Name <email@example.com>',
