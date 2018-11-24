@@ -8,6 +8,9 @@ PGP is the cryptographic standard used to sign git commits, and I wanted to prov
 to tap into that power without sacrificing bundle size or worrying about LGPL restrictions.
 So I wrote an entirely new JavaScript library with that narrow use case in mind.
 
+## IMPORTANT!!!
+
+Please read and understand the limitations of the [`sign-and-verify`](https://github.com/wmhilton/isomorphic-pgp/tree/master/src/sign-and-verify) module before using it.
 
 ## Comparison with other libraries
 

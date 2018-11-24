@@ -1,9 +1,14 @@
 # @isomorphic-pgp/generate
 
-Note: Currently only works in the browser
+Note: Current implementation only works in the browser because it uses `crypto.subtle.generateKey`.
 
-## Basic Usage
+If you'd like to implement the Node version, I think it would use `crypto.generateKeyPair` but it also needs to parse the PEM encoded output to extract the actual parameters. Maybe [pem-jwk](https://github.com/dannycoates/pem-jwk) is a good choice?
 
+Tip: Once you've generated a private key, use the `convertPrivateToPublic(openpgpPrivateKey)` function of the `@isomorphic-pgp/parser` library to extract a Public Key you can share.
+
+## Usage
+
+### `generate(options)`
 ```js
 const { generate } = require('@isomorphic-pgp/generate')
 
@@ -11,8 +16,62 @@ const openpgptext = await generate({
     userid: 'User Name <email@example.com>',
     timestamp: Math.floor(Date.now() / 1000)
 })
+
+/*
+// Obviously the exact text will be different every time.
+openpgptext === `-----BEGIN PGP PRIVATE KEY BLOCK-----
+
+lQcYBFv5n9cBEADKMXAIyXS7inW/ktuYo22MKYjDRkrX5ShzSqCFczE1X3I8Q7c8
+BDUZt4CcB9BJsd+RpBh67ibL3vPNhsw4Dtu9Cn7CtMAJQ/j00tvmn1jK4l+DqE6R
+4KszFyaqrngPbexUEQmGS88crl6qWgppRHXdHDng9yImmKRdaJjrozcwsf2bAdqK
+QOspUNPkV1ugmVS7t5kuUslhhiULZs4wPTNQzUKqKyy0Q6SgS1AQ2yhT1XtliX1t
+k4Uiu7RrJ7LIjuD/2THYDySZZdVJRF9kYsNQuRiIYyq3R5ZZNFxQmiCWZtpFBpw8
+JhHVivYWgehXcS+LwMKMAiRdZJAm2TgvhtNivyODcTEXODFklGeJB+k3O/TZDs23
+4R1RIY05Qfrfv+Mte826bsnwNPMTGuJXPB9I0nlhIQbuEQJOVR91vijYL4ofagyU
+XFoVPa+cURFJwDAY9Y9stDvfcDDb63XTH2J1OPnToqcgnhcm9ZQz6LV5NB9Wxtbl
+pZfFl2D/s/NGskevlVc+KZV6wceWyNpcw3O01cj7dN24m0VoN0Bqs/0r9YetoUsE
+1M7n6gljxakdJUXSPXE4bjDBUm4YC27uwRxigRqlry9JXIBPrsOGNrWgPcwk33cB
+Rvmj5MbZkt97ZgxaEY3l+qyi5xzMtkYWinjJ6SUmLTZ2TyoSQeMl5nZFSQARAQAB
+AA/8DaxqNy3ohwZGED6OOzRSJDhq10nZpeAJbEKPuHahzUo3H3w02AowzRxrxiGB
+JHqy89Z1EVsppH/fXPbQuLnIgnBDQkeW9QlzvJrF5ELCbnYAn5ayOYtICJx4MPK7
+i8+TO9wrGLnnt7jTDhIowhWvItTV1TDhTlrkQqzgKo9PHCvtSp5FeTQKszCUI80E
+lUfJQyiXY1qV49J+jtbU+s4ouj4nU/q3ezlX2L8/GuS3RXQadDNoGBDx3/dxrA1z
+Obzv2l2F0Wa0wurwEZReHxvOuZbK4e5S5TIiKMYxuAG0UneCK0jXJ/orGpXbLop6
+e+9bl8fhYDaE3wv986Kc+hnUEaqrz65/bqC6cks08LsTyE5tlnG1WIcQfjrj7+vT
+NsH+NmcwTSRfwgGRJMVn7VoBd1+T6qrAWCRUZB26A77XVI9cRJFildbQw9Ajfm/A
+8kSHrCzkcHXvYVRa/KSzi+1DgVZX74+On8UtI9pontd33rSBaTkYRld/k0cXP0A4
+0bSbKGKgFIBk3NF2nM5X9nxzvWJsv1y19SWjEApKBRjzIuX1AZ28CRIVqToZdwy3
+ZpCpAc2nfbBFhdZRU7Fh4ggyUh7QuPJcUUKjgDGuHi9r4mgV2mU+dGll8NhjYTYY
+8gy+5g0iHV3VSTMA1T6vnl06gMeUDWMQ0KZqPOAvtFosAkEIAO9I75R4WH0+XuL8
+nWCNkpTaFDCYJM16n5Ystb/BimDAmTZfaXogkVz2JDp472ILwuOd8yJWam9B+g9a
+XMVYa3ML5cQdk9CCW5ovWgfNVJnZCZk+qr2jV0EWP4j5zT/U9lrKcgaaM2mTSHqw
+IMasLvvl/3t4wPNxnJ0rNjzAXIft65S1Sr93zNrbjFQudx1VA/kREhTV8g2VJx9s
+96Qq7QK+XfX+071rbD87FZrrW55CB59D5tazxPT08Jwj6hKyFgKNNjiIwLzDzE4r
+hXwdAARRI5TpXa08N44n1B+6ya+hxOZD+0DU2F2xvWemLwxKVJos3QkZHg0IFJqK
+aYRL9/cIANhRMya1Nt2LVrHsipzuZMGQyJr8m5oLvr/uNtCZTMDP12zIovA4QETc
+OG7tZ71+pjgj2UcQdmxZQaqdRb7f8II4ryfUtSTgWmUoixwEEmhOs5ozViiC2yUm
+kU/9X3kALPhzbh2Kp6vp7q3syETEix9Do2Uokq/1ethU19I6Mmaaoe+CHeZXI9Uq
+D7bwAgswmz/yCEBM+3yUM2Iapbh41uoDGPvWbUWr1yz1+qINC+vGpx0tlnUbl95y
+G0OIvdxfiWzUJkZJ5+AnjisWn9TQ5U8vFA7k4RFJTtxiZQSUDODfywBN7mz7baOj
+4gy587B/5t0EA2p07Y8iuZX8DhDQ3L8H/3o7n89Q6Q2bPAdFOLzY8fGTMDEQ5bck
+Iod2gXMHHmDPFtqKUl+ejLjt/v98FrN9amqVmh1J5zDJr4QVE7txkDYEjklbzjDD
++PJrVJvYB7TeNPPP76uQftxWB8C8taz0km3C7wEuH+C2D8Ks0eTrmlV3/OQsFjbP
+EP2zeCzZfcnWnHJyHNSWKGKBwIputeLJbkv8QL17k/RYE6sKR4U4S2H2DsbL92vM
+Qptya1cMd5wo/CE7MvrPvikRL9thCa1+PfeI6d56O9tWFxX1pvD7qdKPbdQNhO97
+mk8wccsOfSu3vJs1pH8Yi+w35QKcfjgjuSmA1+uUCO34cSRYaWO4nkKBNLQdVXNl
+ciBOYW1lIDxlbWFpbEBleGFtcGxlLmNvbT6JAh8EEwEIAAkFAlv5n9cCGwMACgkQ
+IULXQhbuxW933g/+OsjnbyyGNzOWgqQrh6p5VOU8GbaAe9z5jmbOXKzjlEadKMdy
+hYJiv6/i9VbXY6s+fZz3m/iJexxtPY/CTKAbAtSPw3mfJBGmaWOt8MCQImedftVa
+s8IlVJm7LSzc0woszdXpRA3cOL/0jMqSkvq9t9dJ2gaOLfjY45nMjfw/SVGhvega
+N+lpunMdpwOhGPR26sD8cICfbUzn39eWcfJ6tg2Bo7USxvtqKEE+8djm0H6kc72M
++Ksluc7z+7wG5mBgoI0NpXak0cx8XDkH1K/hWIBTg4LaThP0BCyqVNcyf/cleQtG
+8EPI260z+wiIWGf+dYWGNccnlPA29TA/iSGTaRRWFFXIV7fCBB4WklTXB3bridUk
+/Pw4IpD65rOsANX4qZWL+0soXHlyxeCxmwfBdBfAhTcSZ6oyQSTeTYTROc48nJdW
+uKb/XXvdiaYwyhf1q36q1B6ureZB0rCOpwKH+R98rjY0yPmj2mIq9+awlK8ckQ6N
+0iu33bfTviE43/mon3SNqJyEjazH6qP6rdJgLXy3EE4NTwoeq2Mo0l9j+uKobMq2
++SpIyXgVr6U4VZQ/Ie01KlCuL2+WBNdoQ1rzaE8ytSByTMLE/REoIHGTdq5Ri5VD
+b+B4AlhKrk89QCxgp0jszH1jrUDo4XsWSgMxgbzLotPfSwrm24zjatECG2o=
+=qq+Z
+-----END PGP PRIVATE KEY BLOCK-----`
+*/
 ```
-
-## API
-
-- `generate(options)`
