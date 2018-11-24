@@ -3,7 +3,7 @@
     "access": "public"
   },
   "name": "@isomorphic-pgp/util",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "Miscellaneous pgp functions",
   "scripts": {
     "test": "jest --testEnvironment=node && karma start --single-run"
@@ -24,8 +24,13 @@
     "url": "https://github.com/wmhilton/isomorphic-pgp/issues"
   },
   "homepage": "https://github.com/wmhilton/isomorphic-pgp#readme",
+  "files": [
+    "**/*.js",
+    "!__tests__",
+    "!coverage"
+  ],
   "dependencies": {
-    "@isomorphic-pgp/parser": "^0.0.3",
+    "@isomorphic-pgp/parser": "^0.0.4",
     "array-buffer-to-hex": "^1.0.0",
     "concat-buffers": "^1.0.0",
     "sha.js": "^2.4.11"

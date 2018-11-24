@@ -1,4 +1,4 @@
-const { generate } = require('./main.js')
+const { generate } = require('../main.js')
 
 describe('generate', () => {
   it('should generate a keypair', async () => {
