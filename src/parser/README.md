@@ -1,4 +1,7 @@
-# @isomorphic-pgp/parser [WORK IN PROGRESS]
+# @isomorphic-pgp/parser
+
+This isn't a full-featured parser - it parses just enough packet types
+to enable signing and verification.
 
 ## Basic Usage
 

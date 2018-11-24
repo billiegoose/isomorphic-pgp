@@ -1,4 +1,4 @@
-# @isomorphic-pgp/util [WORK IN PROGRESS]
+# @isomorphic-pgp/util
 
 ## Basic Usage
 

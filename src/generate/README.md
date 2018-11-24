@@ -1,4 +1,6 @@
-# @isomorphic-pgp/generate [WORK IN PROGRESS]
+# @isomorphic-pgp/generate
+
+Note: Currently only works in the browser
 
 ## Basic Usage
 

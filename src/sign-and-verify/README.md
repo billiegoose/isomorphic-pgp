@@ -1,4 +1,6 @@
-# @isomorphic-pgp/sign-and-verify [WORK IN PROGRESS]
+# @isomorphic-pgp/sign-and-verify
+
+Note: Only handles RSA key types
 
 ## Basic Usage
 
