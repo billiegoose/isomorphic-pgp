@@ -1,3 +1,7 @@
+const { createPrivateJWK } = require("./createPrivateJWK.js");
+const { JWKtoPGP } = require("./JWKtoPGP.js");
+
 module.exports.generate = async function generate({ userid, timestamp }) {
-  throw new Error('Not implemented. TODO: implement @isomorphic-pgp/generate for Node.js')
+  let jwk = await createPrivateJWK();
+  return JWKtoPGP(jwk, userid, timestamp);
 }

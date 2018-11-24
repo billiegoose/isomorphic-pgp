@@ -1,8 +1,8 @@
 # @isomorphic-pgp/generate
 
-Note: Current implementation only works in the browser because it uses `crypto.subtle.generateKey`.
+In the browser it uses `crypto.subtle.generateKey`.
 
-If you'd like to implement the Node version, I think it would use `crypto.generateKeyPair` but it also needs to parse the PEM encoded output to extract the actual parameters. Maybe [pem-jwk](https://github.com/dannycoates/pem-jwk) is a good choice?
+In node it uses `crypto.generateKeyPair` which was added in v10.12.0.
 
 Tip: Once you've generated a private key, use the `convertPrivateToPublic(openpgpPrivateKey)` function of the `@isomorphic-pgp/parser` library to extract a Public Key you can share.
 

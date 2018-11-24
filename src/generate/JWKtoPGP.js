@@ -7,7 +7,7 @@ const SecretKey = require("@isomorphic-pgp/parser/Packet/SecretKey.js");
 const { certify } = require("@isomorphic-pgp/sign-and-verify/certify.js");
 
 module.exports.JWKtoPGP = async function JWKtoPGP(jwk, author, timestamp) {
-  if (jwk.kty !== "RSA" || jwk.alg !== "RS256") throw new Error("Only RSA keys with SHA256 hash alg supported at this time");
+  if (jwk.kty !== "RSA") throw new Error("Only RSA keys with SHA256 hash alg supported at this time");
 
   let e = UrlSafeBase64.serialize(jwk.e);
   let n = UrlSafeBase64.serialize(jwk.n);

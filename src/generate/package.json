@@ -6,7 +6,9 @@
   "version": "0.0.1",
   "description": "Generates an OpenPGP keypair",
   "main": "main.js",
-  "browser": "browser.js",
+  "browser": {
+    "./createPrivateJWK.js": "./createPrivateJWK.browser.js"
+  },
   "scripts": {
     "test": "jest --testEnvironment=node --coverage && karma start --single-run"
   },
@@ -15,7 +17,8 @@
     "@isomorphic-pgp/sign-and-verify": "^0.0.11",
     "@isomorphic-pgp/util": "^0.0.6",
     "array-buffer-to-hex": "^1.0.0",
-    "jsbn": "^1.1.0"
+    "jsbn": "^1.1.0",
+    "pem-jwk": "^1.5.1"
   },
   "repository": {
     "type": "git",

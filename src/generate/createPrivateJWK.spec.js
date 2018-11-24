@@ -1,4 +1,4 @@
-const { createPrivateJWK } = require('./browser/createPrivateJWK.js')
+const { createPrivateJWK } = require('./createPrivateJWK.js')
 
 describe('createPrivateJWK', () => {
   it('createPrivateJWK', async () => {
