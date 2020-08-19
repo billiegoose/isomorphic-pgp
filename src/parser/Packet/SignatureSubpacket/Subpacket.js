@@ -4,6 +4,8 @@ const { select } = require("select-case");
 const UrlSafeBase64 = require("../../UrlSafeBase64.js");
 const Length = require("./Length.js");
 const CreationTime = require("./CreationTime.js");
+const SignatureExpirationTime = require("./SignatureExpirationTime.js");
+const KeyExpirationTime = require("./KeyExpirationTime.js");
 const Issuer = require("./Issuer.js");
 const KeyFlags = require("./KeyFlags.js");
 
@@ -16,6 +18,8 @@ module.exports.parse = function parse(a) {
   let _data = a.b.slice(a.i, (a.i += subpacket.length - 1));
   subpacket.subpacket = select(subpacket.type, {
     2: () => CreationTime.parse(_data),
+    3: () => SignatureExpirationTime.parse(_data),
+    9: () => KeyExpirationTime.parse(_data),
     16: () => Issuer.parse(_data),
     27: () => KeyFlags.parse(_data),
     default: () => ({ data: UrlSafeBase64.parse(_data) })
@@ -26,6 +30,8 @@ module.exports.parse = function parse(a) {
 module.exports.serialize = function serialize(subpacket) {
   let content = select(subpacket.type, {
     2: () => CreationTime.serialize(subpacket.subpacket),
+    3: () => SignatureExpirationTime.serialize(subpacket.subpacket),
+    9: () => KeyExpirationTime.serialize(subpacket.subpacket),
     16: () => Issuer.serialize(subpacket.subpacket),
     27: () => KeyFlags.serialize(subpacket.subpacket),
     default: () => UrlSafeBase64.serialize(subpacket.subpacket.data)
