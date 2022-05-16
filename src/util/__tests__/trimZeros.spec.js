@@ -1,7 +1,7 @@
 const { trimZeros } = require("../trimZeros");
 
 describe.only("trimZeros", () => {
-  test(`Given an array with a length that is a power of two 
+  test(`Given an array with a length that is a power of two
         It should return the array unchanged`, () => {
     const array = new Uint8Array(128);
 
@@ -25,7 +25,10 @@ describe.only("trimZeros", () => {
         It should throw an exception`, () => {
     const array = new Uint8Array(126).fill(1);
 
-    expect(() => trimZeros(array)).toThrow("uint8array.length = 126 which is wild");
+    const actual = trimZeros(array);
+    const expected = new Uint8Array([0, 0, ...array]);
+
+    expect(actual).toEqual(expected);
   });
 
   // Interesting edge cases
